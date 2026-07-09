@@ -1,0 +1,105 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Profile {
+  id             Int      @id @default(1)
+  name           String   @default("")
+  shortName      String   @default("")
+  headerName     String   @default("")
+  terminalPrompt String   @default("")
+  terminalUser   String   @default("")
+  tagline        String   @default("")
+  bio            String   @default("")
+  about          String   @default("[]")
+  corePrinciples String   @default("[]")
+  statusLabel    String   @default("")
+  profileImage   String   @default("")
+  aboutImage     String   @default("")
+  github         String   @default("")
+  linkedin       String   @default("")
+  twitter        String   @default("")
+  email          String   @default("")
+  footerText     String   @default("")
+  resumeUrl      String   @default("")
+  resumeFile     String   @default("")
+}
+
+model Role {
+  id        Int    @id @default(autoincrement())
+  title     String
+  sortOrder Int    @default(0)
+}
+
+model Project {
+  id              Int    @id @default(autoincrement())
+  title           String
+  category        String @default("")
+  description     String @default("")
+  longDescription String @default("")
+  stack           String @default("[]")
+  terminalType    String @default("")
+  terminalDesc    String @default("")
+  terminalScript  String @default("./run.sh")
+  tags            String @default("[]")
+  image           String @default("")
+  liveUrl         String @default("")
+  sourceUrl       String @default("")
+  gridSpan        String @default("8")
+  featured        Int    @default(0)
+  sortOrder       Int    @default(0)
+}
+
+model Skill {
+  id        Int    @id @default(autoincrement())
+  name      String
+  icon      String @default("code")
+  percent   Int    @default(70)
+  level     String @default("expertise")
+  category  String @default("")
+  sortOrder Int    @default(0)
+}
+
+model Education {
+  id          Int    @id @default(autoincrement())
+  institution String
+  degree      String @default("")
+  field       String @default("")
+  startDate   String @default("")
+  endDate     String @default("")
+  description String @default("")
+  sortOrder   Int    @default(0)
+}
+
+model Certificate {
+  id        Int    @id @default(autoincrement())
+  name      String
+  issuer    String @default("")
+  date      String @default("")
+  url       String @default("")
+  image     String @default("")
+  sortOrder Int    @default(0)
+}
+
+model Review {
+  id         Int    @id @default(autoincrement())
+  clientName String
+  company    String @default("")
+  rating     Int    @default(5)
+  text       String @default("")
+  date       String @default("")
+  sortOrder  Int    @default(0)
+}
+
+model TerminalInfo {
+  id        Int    @id @default(autoincrement())
+  key       String
+  label     String
+  value     String @default("")
+  sortOrder Int    @default(0)
+}
