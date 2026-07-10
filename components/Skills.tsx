@@ -50,11 +50,11 @@ export default function Skills({ skills }: { skills: Skill[] }) {
 
   return (
     <section className="max-w-container-max mx-auto px-6 py-section-padding" id="skills">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3 mb-8">
         <h2 className="font-headline-md text-headline-md text-primary">
           ./show_expertise{view === "npm" ? " --verbose" : " --list"}
         </h2>
-        <div className="flex gap-2">
+        <div className="flex gap-2 self-start md:self-auto">
           <button
             onClick={() => setView("normal")}
             className={`px-4 py-1.5 text-xs font-bold rounded border transition-all ${
