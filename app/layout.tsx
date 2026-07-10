@@ -59,14 +59,14 @@ export async function generateMetadata(): Promise<Metadata> {
       description:
         "MERN Stack Developer specializing in TypeScript, React, Next.js, Node.js, and modern web architectures.",
       url: siteUrl,
-      images: [{ url: "/api/og", width: 1200, height: 630, alt: "Sayed Atiqur Rahman" }],
+      images: [{ url: "https://images.pexels.com/photos/38513711/pexels-photo-38513711.jpeg", width: 1200, height: 630, alt: "Sayed Atiqur Rahman" }],
     },
     twitter: {
       card: "summary_large_image",
       title: "Sayed Atiqur Rahman | Full Stack Developer",
       description:
         "MERN Stack Developer specializing in TypeScript, React, Next.js, Node.js, and modern web architectures.",
-      images: [{ url: "/api/og", width: 1200, height: 630, alt: "Sayed Atiqur Rahman" }],
+      images: [{ url: "https://images.pexels.com/photos/38513711/pexels-photo-38513711.jpeg", width: 1200, height: 630, alt: "Sayed Atiqur Rahman" }],
     },
     robots: {
       index: true,
