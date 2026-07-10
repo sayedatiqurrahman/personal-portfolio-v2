@@ -11,12 +11,12 @@ export default function Education({ education }: { education: Education[] }) {
       <div className="space-y-6">
         {education.map((edu) => (
           <div key={edu.id} className="terminal-border p-6 bg-surface-container-low">
-            <div className="flex justify-between items-start mb-3">
+            <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-1 mb-3">
               <div>
                 <h3 className="text-on-surface font-bold text-lg">{edu.institution}</h3>
                 <p className="text-primary font-code-sm">{edu.degree}{edu.field ? ` in ${edu.field}` : ""}</p>
               </div>
-              <span className="text-on-surface-variant text-sm font-code-sm">
+              <span className="text-on-surface-variant text-sm font-code-sm shrink-0">
                 {edu.startDate}{edu.endDate ? ` - ${edu.endDate}` : " - Present"}
               </span>
             </div>
