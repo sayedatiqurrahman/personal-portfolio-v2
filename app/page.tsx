@@ -51,7 +51,7 @@ export default async function Home() {
     alternateName: profile?.shortName,
     description: profile?.tagline || profile?.bio,
     image: profile?.profileImage,
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://personal-portfolio-v2.vercel.app",
+    url: process.env.NEXT_PUBLIC_SITE_URL || "https://atiq.is-a.dev",
     sameAs: [
       profile?.github,
       profile?.linkedin,

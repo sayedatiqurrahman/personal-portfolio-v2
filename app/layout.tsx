@@ -16,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://personal-portfolio-v2.vercel.app";
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://atiq.is-a.dev";
 
 export const viewport: Viewport = {
   themeColor: "#0a0a0a",
