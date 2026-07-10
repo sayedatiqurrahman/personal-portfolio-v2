@@ -5,6 +5,8 @@ import Footer from "@/components/Footer";
 import FAB from "@/components/FAB";
 import { getProfile, getProjects } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
     return await fn();
