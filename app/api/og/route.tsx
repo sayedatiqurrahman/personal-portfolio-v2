@@ -1,9 +1,10 @@
 import { ImageResponse } from "next/og";
 import { getProfile, getRoles } from "@/lib/db";
+import { NextRequest } from "next/server";
 
 export const runtime = "edge";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   const [profile, roles] = await Promise.all([getProfile(), getRoles()]);
 
   const inter = fetch(
@@ -17,7 +18,8 @@ export async function GET() {
   const roleText = roles?.length ? roles.map((r) => r.title).join(" // ") : "Full Stack Developer";
   const name = profile?.name || "Sayed Atiqur Rahman";
   const tagline = profile?.tagline || "";
-  const imgSrc = profile?.profileImage || "";
+  const bio = profile?.bio || "";
+  const imgSrc = new URL("/og-profile-pic.webp", req.url).toString();
 
   return new ImageResponse(
     (
@@ -106,24 +108,24 @@ export async function GET() {
           >
             {/* Profile image */}
             {imgSrc && (
-              <div
-                style={{
-                  width: 200,
-                  height: 250,
-                  borderRadius: 0,
-                  border: "2px solid rgba(75,226,119,0.25)",
-                  display: "flex",
-                  overflow: "hidden",
-                  flexShrink: 0,
-                  filter: "grayscale(1) contrast(1.25)",
-                }}
-              >
-                <img
-                  src={imgSrc}
-                  alt=""
-                  style={{ width: "100%", height: "100%", objectFit: "cover" }}
-                />
-              </div>
+                <div
+                  style={{
+                    width: 220,
+                    height: 220,
+                    borderRadius: "50%",
+                    border: "3px solid rgba(75,226,119,0.35)",
+                    display: "flex",
+                    overflow: "hidden",
+                    flexShrink: 0,
+                    filter: "grayscale(0.4) contrast(1.15)",
+                  }}
+                >
+                  <img
+                    src={imgSrc}
+                    alt=""
+                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                  />
+                </div>
             )}
 
             {/* Info */}
@@ -186,6 +188,22 @@ export async function GET() {
                   {tagline}
                 </span>
               )}
+              {bio && (
+                <span
+                  style={{
+                    color: "rgba(218,226,253,0.5)",
+                    fontSize: 13,
+                    lineHeight: 1.4,
+                    marginTop: 4,
+                    maxWidth: 520,
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap" as const,
+                  }}
+                >
+                  {bio}
+                </span>
+              )}
               <span
                 style={{
                   color: "rgba(75,226,119,0.4)",
@@ -194,7 +212,7 @@ export async function GET() {
                   marginTop: 8,
                 }}
               >
-                {">"} portfolio v2.0 // mern stack developer
+                {`${profile?.terminalUser || "sayed@atiqur"}@portfolio:~$`} {"cat "}{name?.toLowerCase().replace(/\s+/g, "-")}.md
               </span>
             </div>
           </div>
