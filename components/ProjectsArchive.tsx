@@ -21,7 +21,7 @@ function ProjectCard({ project }: { project: Project }) {
   const stack = parseList(project.stack);
 
   return (
-    <div className="terminal-border p-6 bg-surface-container-low relative overflow-hidden h-full">
+    <article className="terminal-border p-6 bg-surface-container-low relative overflow-hidden h-full">
       <div className="flex justify-between items-center mb-4 border-b border-primary/20 pb-2">
         <span className="text-primary font-headline-md text-headline-md">{project.terminalScript}</span>
         <div className="flex gap-1">
@@ -55,7 +55,7 @@ function ProjectCard({ project }: { project: Project }) {
           )}
         </div>
       </div>
-    </div>
+    </article>
   );
 }
 

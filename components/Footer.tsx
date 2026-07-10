@@ -9,16 +9,16 @@ export default function Footer({ profile }: { profile: Profile }) {
         </div>
         <div className="flex gap-stack-lg">
           {profile.github && profile.github !== "#" && (
-            <a className="text-on-surface-variant hover:text-primary transition-colors font-label-caps" href={profile.github} target="_blank" rel="noopener">GitHub</a>
+            <a className="text-on-surface-variant hover:text-primary transition-colors font-label-caps" href={profile.github} target="_blank" rel="noopener noreferrer">GitHub</a>
           )}
           {profile.linkedin && profile.linkedin !== "#" && (
-            <a className="text-on-surface-variant hover:text-primary transition-colors font-label-caps" href={profile.linkedin} target="_blank" rel="noopener">LinkedIn</a>
+            <a className="text-on-surface-variant hover:text-primary transition-colors font-label-caps" href={profile.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
           )}
           {profile.twitter && profile.twitter !== "#" && (
-            <a className="text-on-surface-variant hover:text-primary transition-colors font-label-caps" href={profile.twitter} target="_blank" rel="noopener">Twitter</a>
+            <a className="text-on-surface-variant hover:text-primary transition-colors font-label-caps" href={profile.twitter} target="_blank" rel="noopener noreferrer">Twitter</a>
           )}
           {profile.resumeUrl && (
-            <a className="text-on-surface-variant hover:text-primary transition-colors font-label-caps" href={profile.resumeUrl} target="_blank" rel="noopener">Resume</a>
+            <a className="text-on-surface-variant hover:text-primary transition-colors font-label-caps" href={profile.resumeUrl} target="_blank" rel="noopener noreferrer">Resume</a>
           )}
           {profile.resumeFile && (
             <a className="text-on-surface-variant hover:text-primary transition-colors font-label-caps" href="/api/resume" download>Resume</a>

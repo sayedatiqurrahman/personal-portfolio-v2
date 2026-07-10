@@ -3,7 +3,6 @@ import Link from "next/link";
 
 function ProjectCard({ project }: { project: Project }) {
   const stack = (() => { try { return JSON.parse(project.stack); } catch { return []; } })();
-  const tags = (() => { try { return JSON.parse(project.tags); } catch { return []; } })();
 
   const spanClass =
     project.gridSpan === "4" ? "md:col-span-4"
@@ -12,7 +11,7 @@ function ProjectCard({ project }: { project: Project }) {
 
   if (project.gridSpan === "12") {
     return (
-      <div className={`${spanClass}`}>
+      <article className={`${spanClass}`}>
         <div className="terminal-border p-6 bg-surface-container-low relative overflow-hidden">
           <div className="md:flex gap-12 items-center">
             <div className="flex-1">
@@ -33,21 +32,21 @@ function ProjectCard({ project }: { project: Project }) {
               </div>
               <div className="flex gap-4">
                 {project.liveUrl && project.liveUrl !== "#" && (
-                  <a className="text-primary hover:underline font-bold" href={project.liveUrl} target="_blank" rel="noopener">[ LIVE_DEMO ]</a>
+                  <a className="text-primary hover:underline font-bold" href={project.liveUrl} target="_blank" rel="noopener noreferrer">[ LIVE_DEMO ]</a>
                 )}
                 {project.sourceUrl && project.sourceUrl !== "#" && (
-                  <a className="text-secondary hover:underline font-bold" href={project.sourceUrl} target="_blank" rel="noopener">[ SOURCE_CODE ]</a>
+                  <a className="text-secondary hover:underline font-bold" href={project.sourceUrl} target="_blank" rel="noopener noreferrer">[ SOURCE_CODE ]</a>
                 )}
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </article>
     );
   }
 
   return (
-    <div className={`${spanClass}`}>
+    <article className={`${spanClass}`}>
       <div className="terminal-border p-6 bg-surface-container-low relative overflow-hidden h-full">
         <div className="flex justify-between items-center mb-4 border-b border-primary/20 pb-2">
           <span className="text-primary font-headline-md text-headline-md">{project.terminalScript}</span>
@@ -58,7 +57,7 @@ function ProjectCard({ project }: { project: Project }) {
           </div>
         </div>
         <div className="space-y-3 font-code-sm">
-          <p className="text-on-surface font-bold">{project.title}</p>
+          <h3 className="text-on-surface font-bold">{project.title}</h3>
           <p className="text-on-surface-variant">{project.description}</p>
           <div className="flex flex-wrap gap-1">
             {stack.map((s: string) => (
@@ -67,15 +66,15 @@ function ProjectCard({ project }: { project: Project }) {
           </div>
           <div className="flex gap-4 mt-4 pt-4 border-t border-primary/10">
             {project.liveUrl && project.liveUrl !== "#" && (
-              <a className="text-primary hover:underline" href={project.liveUrl} target="_blank" rel="noopener">[ LIVE_DEMO ]</a>
+              <a className="text-primary hover:underline" href={project.liveUrl} target="_blank" rel="noopener noreferrer">[ LIVE_DEMO ]</a>
             )}
             {project.sourceUrl && project.sourceUrl !== "#" && (
-              <a className="text-secondary hover:underline" href={project.sourceUrl} target="_blank" rel="noopener">[ SOURCE_CODE ]</a>
+              <a className="text-secondary hover:underline" href={project.sourceUrl} target="_blank" rel="noopener noreferrer">[ SOURCE_CODE ]</a>
             )}
           </div>
         </div>
       </div>
-    </div>
+    </article>
   );
 }
 
@@ -96,13 +95,13 @@ export default function Projects({ projects, limit = 3 }: { projects: Project[];
         </div>
 
         {hasMoreProjects && (
-          <a
+          <Link
             href="/projects"
             className="inline-flex items-center gap-2 self-start rounded-full border border-primary/30 bg-surface-container px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
           >
             <span className="material-symbols-outlined text-base">folder_open</span>
             cd all-projects
-          </a>
+          </Link>
         )}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">

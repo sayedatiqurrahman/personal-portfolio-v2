@@ -73,7 +73,7 @@ export default function Hero({ profile, roles, terminalInfo }: { profile: Profil
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                alt="Terminal Avatar"
+                alt={`Portrait of ${profile.name} - Full Stack Developer`}
                 className="w-full aspect-[0.8] object-cover border-2 border-primary/20 rounded shadow-[0_0_20px_rgba(74,225,118,0.2)] grayscale contrast-125"
                 src={profile.profileImage}
               />
@@ -81,9 +81,9 @@ export default function Hero({ profile, roles, terminalInfo }: { profile: Profil
             <div className="flex-1 text-primary space-y-4">
               <p className="text-primary-fixed-dim font-bold">{profile.terminalUser}</p>
               <p className="border-b border-primary/20 pb-2">-----------------</p>
-              <div className="text-lg font-bold mb-4">
+              <h1 className="text-lg font-bold mb-4">
                 {profile.name}: <GlitchTypewriter roles={roles} />
-              </div>
+              </h1>
               <div className="grid grid-cols-[120px_1fr] gap-y-2">
                 {terminalInfo.map((info) => (
                   <Fragment key={info.id}>

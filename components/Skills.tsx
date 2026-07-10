@@ -124,9 +124,9 @@ export default function Skills({ skills }: { skills: Skill[] }) {
               const catSkills = byCategory[cat];
               if (!catSkills?.length) return null;
               return (
-                <div key={cat}>
+                  <div key={cat}>
                   <h3 className="text-on-surface-variant text-sm font-code-sm mb-4 opacity-60">
-                    {/* {cat.toUpperCase()} STACK */}
+                    {cat.toUpperCase()} STACK
                   </h3>
                   <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {catSkills.map((skill) => (
