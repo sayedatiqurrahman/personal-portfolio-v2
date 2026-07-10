@@ -9,9 +9,7 @@ const ACCENTS: { key: Accent; label: string; color: string }[] = [
   { key: "green",   label: "G", color: "#4be277" },
   { key: "yellow",  label: "Y", color: "#eab308" },
   { key: "cyan",    label: "C", color: "#06b6d4" },
-  { key: "magenta", label: "M", color: "#d946ef" },
   { key: "orange",  label: "O", color: "#f97316" },
-  { key: "pink",    label: "P", color: "#ec4899" },
   { key: "lime",    label: "L", color: "#84cc16" },
 ];
 
@@ -76,10 +74,11 @@ export default function Header({ profile }: { profile: Profile }) {
         <div className="flex items-center gap-stack-md relative" ref={menuRef}>
           <button
             onClick={() => setOpen(!open)}
-            className="w-7 h-7 rounded-full border border-primary/40 transition-all duration-200 hover:scale-110 hover:shadow-[0_0_10px_rgb(var(--accent)/0.3)]"
-            style={{ backgroundColor: ACCENTS.find(a => a.key === accent)?.color }}
+            className="text-on-surface-variant hover:text-primary transition-colors flex items-center"
             aria-label="Switch accent color"
-          />
+          >
+            <span className="material-symbols-outlined text-xl">palette</span>
+          </button>
           {open && (
             <div className="absolute top-full right-0 mt-2 bg-surface-container border border-primary/20 rounded p-2 flex gap-1.5 shadow-lg z-50">
               {ACCENTS.map((a) => (

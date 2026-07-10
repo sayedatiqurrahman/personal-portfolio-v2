@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-export type Accent = "green" | "yellow" | "cyan" | "magenta" | "orange" | "pink" | "lime";
+export type Accent = "green" | "yellow" | "cyan" | "orange" | "lime";
 
 type AccentContextType = {
   accent: Accent;
