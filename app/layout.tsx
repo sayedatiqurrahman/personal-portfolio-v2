@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { getProfile } from "@/lib/db";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -22,61 +23,66 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
-  title: {
-    default: "Sayed Atiqur Rahman | Full Stack Developer",
-    template: "%s | Sayed Atiqur Rahman",
-  },
-  description:
-    "MERN Stack Developer specializing in TypeScript, React, Next.js, Node.js, and modern web architectures. Building high-performance applications with clean code and human-centric design.",
-  keywords: [
-    "Sayed Atiqur Rahman",
-    "Full Stack Developer",
-    "MERN Stack",
-    "TypeScript",
-    "React Developer",
-    "Next.js",
-    "Node.js",
-    "Web Developer",
-    "Portfolio",
-    "Bangladesh Developer",
-  ],
-  authors: [{ name: "Sayed Atiqur Rahman" }],
-  creator: "Sayed Atiqur Rahman",
-  publisher: "Sayed Atiqur Rahman",
-  openGraph: {
-    type: "website",
-    locale: "en_US",
-    siteName: "Sayed Atiqur Rahman Portfolio",
-    title: "Sayed Atiqur Rahman | Full Stack Developer",
+export async function generateMetadata(): Promise<Metadata> {
+  const profile = await getProfile();
+
+  return {
+    metadataBase: new URL(siteUrl),
+    title: {
+      default: "Sayed Atiqur Rahman | Full Stack Developer",
+      template: "%s | Sayed Atiqur Rahman",
+    },
     description:
-      "MERN Stack Developer specializing in TypeScript, React, Next.js, Node.js, and modern web architectures.",
-    url: siteUrl,
-    images: [{ url: "/api/og", width: 1200, height: 630 }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Sayed Atiqur Rahman | Full Stack Developer",
-    description:
-      "MERN Stack Developer specializing in TypeScript, React, Next.js, Node.js, and modern web architectures.",
-    images: [{ url: "/api/og", width: 1200, height: 630 }],
-  },
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
+      "MERN Stack Developer specializing in TypeScript, React, Next.js, Node.js, and modern web architectures. Building high-performance applications with clean code and human-centric design.",
+    keywords: [
+      "Sayed Atiqur Rahman",
+      "Full Stack Developer",
+      "MERN Stack",
+      "TypeScript",
+      "React Developer",
+      "Next.js",
+      "Node.js",
+      "Web Developer",
+      "Portfolio",
+      "Bangladesh Developer",
+    ],
+    authors: [{ name: "Sayed Atiqur Rahman" }],
+    creator: "Sayed Atiqur Rahman",
+    publisher: "Sayed Atiqur Rahman",
+    icons: profile?.profileImage ? [{ rel: "icon", url: profile.profileImage }] : [],
+    openGraph: {
+      type: "website",
+      locale: "en_US",
+      siteName: "Sayed Atiqur Rahman Portfolio",
+      title: "Sayed Atiqur Rahman | Full Stack Developer",
+      description:
+        "MERN Stack Developer specializing in TypeScript, React, Next.js, Node.js, and modern web architectures.",
+      url: siteUrl,
+      images: [{ url: "/api/og", width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Sayed Atiqur Rahman | Full Stack Developer",
+      description:
+        "MERN Stack Developer specializing in TypeScript, React, Next.js, Node.js, and modern web architectures.",
+      images: [{ url: "/api/og", width: 1200, height: 630 }],
+    },
+    robots: {
       index: true,
       follow: true,
-      "max-video-preview": -1,
-      "max-image-preview": "large",
-      "max-snippet": -1,
+      googleBot: {
+        index: true,
+        follow: true,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
+      },
     },
-  },
-  alternates: {
-    canonical: siteUrl,
-  },
-};
+    alternates: {
+      canonical: siteUrl,
+    },
+  };
+}
 
 export default function RootLayout({
   children,

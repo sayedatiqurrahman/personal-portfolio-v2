@@ -34,9 +34,9 @@ export default function Header({ profile }: { profile: Profile }) {
         Skip to content
       </a>
       <div className="flex justify-between items-center w-full px-6 max-w-container-max mx-auto">
-        <div className="font-headline-md text-headline-md font-bold tracking-tighter text-primary transition-all duration-300">
+        <a href="/" className="font-headline-md text-headline-md font-bold tracking-tighter text-primary transition-all duration-300 hover:text-primary-fixed">
           {profile.terminalPrompt}
-        </div>
+        </a>
         <nav className="hidden md:flex items-center gap-stack-lg" aria-label="Main navigation">
           {navItems.map((item) => (
             <a
