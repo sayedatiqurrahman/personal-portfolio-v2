@@ -14,7 +14,6 @@ const ACCENTS: { key: Accent; label: string; color: string }[] = [
 ];
 
 export default function Header({ profile }: { profile: Profile }) {
-  if (!profile) return null;
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);

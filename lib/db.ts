@@ -7,11 +7,35 @@ export const prisma = globalForPrisma.prisma || new PrismaClient();
 if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;
 
 // ─── Profile ────────────────────────────────────────────
+const DEFAULT_PROFILE = {
+  id: 0,
+  name: "",
+  shortName: "",
+  headerName: "",
+  terminalPrompt: "~",
+  terminalUser: "user",
+  tagline: "",
+  bio: "",
+  about: "[]",
+  corePrinciples: "[]",
+  statusLabel: "",
+  profileImage: "",
+  aboutImage: "",
+  github: "",
+  linkedin: "",
+  twitter: "",
+  email: "",
+  footerText: "",
+  resumeUrl: "",
+  resumeFile: "",
+};
+
 export async function getProfile() {
   try {
-    return await prisma.profile.findUnique({ where: { id: 1 } });
+    const profile = await prisma.profile.findUnique({ where: { id: 1 } });
+    return profile || DEFAULT_PROFILE;
   } catch {
-    return null;
+    return DEFAULT_PROFILE;
   }
 }
 
