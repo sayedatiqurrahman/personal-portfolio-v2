@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   const name = profile?.name || "Sayed Atiqur Rahman";
   const tagline = profile?.tagline || "";
   const bio = profile?.bio || "";
-  const imgSrc = "https://images.pexels.com/photos/38512418/pexels-photo-38512418.jpeg?w=400&h=400&fit=crop";
+  const imgSrc = profile?.profileImage || "https://images.pexels.com/photos/38513711/pexels-photo-38513711.jpeg?w=400&h=400&fit=crop";
 
   return new ImageResponse(
     (

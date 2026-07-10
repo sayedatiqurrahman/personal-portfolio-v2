@@ -34,13 +34,13 @@ export async function generateMetadata(): Promise<Metadata> {
       title: `${profile.name || "Portfolio"} | Full Stack Developer`,
       description,
       url: "/",
-      images: [{ url: "https://images.pexels.com/photos/38513711/pexels-photo-38513711.jpeg", width: 1200, height: 630, alt: profile.name || "Developer" }],
+      images: [{ url: "/api/og", width: 1200, height: 630, alt: profile.name || "Developer" }],
     },
     twitter: {
       card: "summary_large_image",
       title: `${profile.name || "Portfolio"} | Full Stack Developer`,
       description,
-      images: [{ url: "https://images.pexels.com/photos/38513711/pexels-photo-38513711.jpeg", width: 1200, height: 630, alt: profile.name || "Developer" }],
+      images: [{ url: "/api/og", width: 1200, height: 630, alt: profile.name || "Developer" }],
     },
   };
 }
