@@ -3,6 +3,8 @@ import { writeFile, unlink, readFile } from "fs/promises";
 import { join } from "path";
 import { getProfile, updateProfile } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("file") as File | null;
@@ -34,25 +36,29 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  const profile = await getProfile();
-  if (!profile) return NextResponse.json({ error: "No profile" }, { status: 404 });
+  try {
+    const profile = await getProfile();
+    if (!profile) return NextResponse.json({ error: "No profile" }, { status: 404 });
 
-  if (profile.resumeFile) {
-    const filepath = join(process.cwd(), "public", "uploads", profile.resumeFile);
-    try {
-      const fileBuffer = await readFile(filepath);
-      return new NextResponse(fileBuffer, {
-        headers: {
-          "Content-Type": "application/pdf",
-          "Content-Disposition": `attachment; filename="resume.pdf"`,
-        },
-      });
-    } catch {
-      return NextResponse.json({ error: "File not found" }, { status: 404 });
+    if (profile.resumeFile) {
+      const filepath = join(process.cwd(), "public", "uploads", profile.resumeFile);
+      try {
+        const fileBuffer = await readFile(filepath);
+        return new NextResponse(fileBuffer, {
+          headers: {
+            "Content-Type": "application/pdf",
+            "Content-Disposition": `attachment; filename="resume.pdf"`,
+          },
+        });
+      } catch {
+        return NextResponse.json({ error: "File not found" }, { status: 404 });
+      }
     }
+    if (profile.resumeUrl) {
+      return NextResponse.redirect(profile.resumeUrl);
+    }
+    return NextResponse.json({ error: "No resume available" }, { status: 404 });
+  } catch {
+    return NextResponse.json(null);
   }
-  if (profile.resumeUrl) {
-    return NextResponse.redirect(profile.resumeUrl);
-  }
-  return NextResponse.json({ error: "No resume available" }, { status: 404 });
 }

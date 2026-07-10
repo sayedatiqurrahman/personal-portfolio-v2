@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getReviews, createReview, updateReview, deleteReview } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
-  const data = await getReviews();
-  return NextResponse.json(data);
+  try {
+    const data = await getReviews();
+    return NextResponse.json(data);
+  } catch {
+    return NextResponse.json([]);
+  }
 }
 
 export async function POST(req: NextRequest) {

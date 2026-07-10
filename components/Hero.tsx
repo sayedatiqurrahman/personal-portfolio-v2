@@ -31,40 +31,6 @@ function glitchPerChar(
   timeouts.push(t);
 }
 
-function GlitchText({ text }: { text: string }) {
-  const [display, setDisplay] = useState("");
-
-  useEffect(() => {
-    if (!text) return;
-    const timeouts: NodeJS.Timeout[] = [];
-    let charIdx = 0;
-
-    function typeNext() {
-      if (charIdx >= text.length) return;
-      const prefix = text.slice(0, charIdx);
-      glitchPerChar(
-        prefix,
-        text[charIdx],
-        setDisplay,
-        (s) => {
-          setDisplay(s);
-          charIdx++;
-          const t = setTimeout(typeNext, 20 + Math.random() * 30);
-          timeouts.push(t);
-        },
-        timeouts,
-      );
-    }
-
-    const t = setTimeout(typeNext, 200);
-    timeouts.push(t);
-
-    return () => timeouts.forEach(clearTimeout);
-  }, [text]);
-
-  return <>{display}</>;
-}
-
 function GlitchTypewriter({ roles }: { roles: Role[] }) {
   const [display, setDisplay] = useState("");
   const textIdxRef = useRef(0);
@@ -162,7 +128,7 @@ export default function Hero({ profile, roles, terminalInfo }: { profile: Profil
               <p className="text-primary-fixed-dim font-bold">{profile.terminalUser}</p>
               <p className="border-b border-primary/20 pb-2" aria-hidden="true">-----------------</p>
               <h1 className="text-lg font-bold mb-4">
-                <GlitchText text={profile.name} />: <GlitchTypewriter roles={roles} />
+                {profile.name}: <GlitchTypewriter roles={roles} />
               </h1>
               <div className="grid grid-cols-[120px_1fr] gap-y-2" role="list">
                 {terminalInfo.map((info) => (
@@ -179,9 +145,19 @@ export default function Hero({ profile, roles, terminalInfo }: { profile: Profil
                 <div className="w-6 h-6 bg-error" />
                 <div className="w-6 h-6 bg-surface-variant" />
               </div>
-              <div className="pt-8">
-                <p className="cursor-blink">{profile.statusLabel || "Ready for deployment"}</p>
-              </div>
+              {profile.resumeUrl && (
+                <div className="pt-8">
+                  <a
+                    href={profile.resumeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-on-primary font-bold rounded-lg hover:bg-primary-fixed transition-colors text-sm font-code-sm cursor-pointer w-fit"
+                  >
+                    <span className="material-symbols-outlined text-base">download</span>
+                    DOWNLOAD RESUME
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>

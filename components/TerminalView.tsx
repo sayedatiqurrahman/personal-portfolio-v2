@@ -18,16 +18,16 @@ interface LogEntry {
 }
 
 const ASCII_BANNER = `
-    ╔══════════════════════════════════════════╗
-    ║   ███████  ██████  ██████  ███████      ║
-    ║   ██      ██    ██ ██   ██ ██           ║
-    ║   ███████ ██    ██ ██████  █████        ║
-    ║        ██ ██    ██ ██   ██ ██           ║
-    ║   ███████  ██████  ██   ██ ███████      ║
-    ║                                          ║
-    ║   Sayed Atiqur Rahman                    ║
-    ║   Interactive Terminal [v2.0.0]          ║
-    ╚══════════════════════════════════════════╝
+    ╔══════════════════════════════════════════════════════════════════════════════╗
+    ║  ██████   █████  ██████  ████████ ████████  █████  ██       ██████  █████    ║
+    ║  ██   ██ ██   ██ ██   ██    ██    ██       ██   ██ ██         ██   ██   ██   ║
+    ║  ██████  ██   ██ ██████     ██    █████    ██   ██ ██         ██   ██   ██   ║
+    ║  ██      ██   ██ ██   ██    ██    ██       ██   ██ ██         ██   ██   ██   ║
+    ║  ██       █████  ██   ██    ██    ██        █████  ████████ ██████  █████    ║
+    ║                                                                              ║
+    ║  SAYED ATIQUR RAHMAN                                                         ║
+    ║  Full Stack Developer                                                        ║
+    ╚══════════════════════════════════════════════════════════════════════════════╝
 `;
 
 const COMMANDS = [
@@ -39,6 +39,7 @@ const COMMANDS = [
   { cmd: "certificates", desc: "View certificates" },
   { cmd: "reviews", desc: "Read client reviews" },
   { cmd: "contact", desc: "Show contact information" },
+  { cmd: "resume", desc: "Download or view resume" },
   { cmd: "whoami", desc: "Display current user" },
   { cmd: "banner", desc: "Show ASCII banner" },
   { cmd: "clear", desc: "Clear terminal" },
@@ -331,6 +332,35 @@ export default function TerminalView({
           );
           break;
 
+        case "resume":
+          output = (
+            <div className="space-y-3">
+              <p className="text-secondary font-bold">Resume</p>
+              <div className="p-3 bg-surface-container-low border border-outline-variant rounded-xl font-code-sm text-xs space-y-2">
+                {profile.resumeUrl && (
+                  <div>
+                    <span className="text-on-surface-variant">Online: </span>
+                    <a href={profile.resumeUrl} target="_blank" rel="noreferrer" className="text-secondary hover:underline">
+                      {profile.resumeUrl}
+                    </a>
+                  </div>
+                )}
+                {profile.resumeFile && (
+                  <div>
+                    <span className="text-on-surface-variant">Download: </span>
+                    <a href="/api/resume" download className="text-primary hover:underline">
+                      {profile.resumeFile}
+                    </a>
+                  </div>
+                )}
+                {!profile.resumeUrl && !profile.resumeFile && (
+                  <span className="text-on-surface-variant">No resume available yet.</span>
+                )}
+              </div>
+            </div>
+          );
+          break;
+
         case "whoami":
           output = <span className="text-primary font-bold">{profile.terminalUser || profile.name}</span>;
           break;
@@ -385,7 +415,7 @@ export default function TerminalView({
     }
   };
 
-  const quickActions = ["help", "about", "skills", "projects", "education", "certificates", "reviews", "contact", "gui"];
+  const quickActions = ["help", "about", "skills", "projects", "education", "certificates", "reviews", "resume", "contact", "gui"];
 
   return (
     <div className="min-h-screen bg-background text-on-surface" onClick={focusInput}>
@@ -398,7 +428,7 @@ export default function TerminalView({
               Interactive Terminal — Sayed Atiqur Rahman
             </p>
             <h1 className="text-xl font-bold font-code-sm text-on-surface">
-              <span className="text-primary">{profile.terminalUser || profile.name}</span>@portfolio:~$
+              <span className="text-primary">{profile.terminalUser || profile.name}</span>:~$
             </h1>
           </div>
           <button
@@ -426,7 +456,7 @@ export default function TerminalView({
                 {entry.input !== undefined && (
                   <div className="flex items-center gap-2 font-code-sm text-xs">
                     <span className="text-primary shrink-0">
-                      {profile.terminalUser || profile.name}@portfolio:~$
+                      {profile.terminalUser || profile.name}:~$
                     </span>
                     <span className="text-on-surface">{entry.input}</span>
                   </div>
@@ -440,7 +470,7 @@ export default function TerminalView({
           {/* Input line */}
           <div className="flex items-center gap-2 border-t border-outline-variant px-4 sm:px-6 py-3">
             <span className="font-code-sm text-xs text-primary shrink-0">
-              {profile.terminalUser || profile.name}@portfolio:~$
+              {profile.terminalUser || profile.name}:~$
             </span>
             <input
               ref={inputRef}

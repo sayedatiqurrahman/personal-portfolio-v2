@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSkills, createSkill, updateSkill, deleteSkill } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
-  const data = await getSkills();
-  return NextResponse.json(data);
+  try {
+    const data = await getSkills();
+    return NextResponse.json(data);
+  } catch {
+    return NextResponse.json([]);
+  }
 }
 
 export async function POST(req: NextRequest) {

@@ -1,9 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getRoles, createRole, updateRole, deleteRole } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
-  const data = await getRoles();
-  return NextResponse.json(data);
+  try {
+    const data = await getRoles();
+    return NextResponse.json(data);
+  } catch {
+    return NextResponse.json([]);
+  }
 }
 
 export async function POST(req: NextRequest) {

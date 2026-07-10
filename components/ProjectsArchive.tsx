@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import type { Project } from "@/lib/types";
 
 function parseList(value: string | null | undefined) {
@@ -17,51 +18,10 @@ function parseList(value: string | null | undefined) {
   }
 }
 
-function ProjectCard({ project }: { project: Project }) {
-  const stack = parseList(project.stack);
-
-  return (
-    <article className="terminal-border p-6 bg-surface-container-low relative overflow-hidden h-full">
-      <div className="flex justify-between items-center mb-4 border-b border-primary/20 pb-2">
-        <span className="text-primary font-headline-md text-headline-md">{project.terminalScript}</span>
-        <div className="flex gap-1">
-          <span className="w-2 h-2 rounded-full bg-error" />
-          <span className="w-2 h-2 rounded-full bg-secondary" />
-          <span className="w-2 h-2 rounded-full bg-primary" />
-        </div>
-      </div>
-
-      <div className="space-y-3 font-code-sm">
-        <div className="flex items-center justify-between gap-3">
-          <p className="text-on-surface font-bold">{project.title}</p>
-          {project.category && (
-            <span className="rounded-full border border-primary/20 bg-primary/10 px-2.5 py-1 text-[10px] uppercase tracking-[0.24em] text-primary">
-              {project.category}
-            </span>
-          )}
-        </div>
-        <p className="text-on-surface-variant">{project.description}</p>
-        <div className="flex flex-wrap gap-1">
-          {stack.map((s: string) => (
-            <span key={s} className="text-primary text-xs">[{s}]</span>
-          ))}
-        </div>
-        <div className="flex gap-4 mt-4 pt-4 border-t border-primary/10">
-          {project.liveUrl && project.liveUrl !== "#" && (
-            <a className="text-primary hover:underline" href={project.liveUrl} target="_blank" rel="noopener">[ LIVE_DEMO ]</a>
-          )}
-          {project.sourceUrl && project.sourceUrl !== "#" && (
-            <a className="text-secondary hover:underline" href={project.sourceUrl} target="_blank" rel="noopener">[ SOURCE_CODE ]</a>
-          )}
-        </div>
-      </div>
-    </article>
-  );
-}
-
 export default function ProjectsArchive({ projects }: { projects: Project[] }) {
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("All");
+  const [view, setView] = useState<"grid" | "list">("grid");
   const [page, setPage] = useState(1);
   const perPage = 10;
 
@@ -138,15 +98,135 @@ export default function ProjectsArchive({ projects }: { projects: Project[] }) {
 
       <div className="mb-6 flex items-center justify-between text-sm text-on-surface-variant">
         <span>{filteredProjects.length} project{filteredProjects.length === 1 ? "" : "s"}</span>
-        <span>Page {page} of {totalPages}</span>
+        <div className="flex items-center gap-3">
+          <span>Page {page} of {totalPages}</span>
+          <div className="flex gap-1 rounded-lg border border-outline-variant p-0.5">
+            <button
+              onClick={() => setView("grid")}
+              className={`px-2.5 py-1.5 rounded-md text-xs transition-all ${
+                view === "grid" ? "bg-primary text-on-primary" : "text-on-surface-variant hover:text-on-surface"
+              }`}
+              title="Grid view"
+            >
+              <span className="material-symbols-outlined text-sm">grid_view</span>
+            </button>
+            <button
+              onClick={() => setView("list")}
+              className={`px-2.5 py-1.5 rounded-md text-xs transition-all ${
+                view === "list" ? "bg-primary text-on-primary" : "text-on-surface-variant hover:text-on-surface"
+              }`}
+              title="List view"
+            >
+              <span className="material-symbols-outlined text-sm">list</span>
+            </button>
+          </div>
+        </div>
       </div>
 
       {visibleProjects.length ? (
-        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-          {visibleProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
+        view === "grid" ? (
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            {visibleProjects.map((project) => {
+              const stack = parseList(project.stack);
+              return (
+                <article key={project.id} className="terminal-border bg-surface-container-low overflow-hidden h-full flex flex-col">
+                  {project.image && (
+                    <div className="relative w-full aspect-video overflow-hidden border-b border-outline-variant/20">
+                      <Image
+                        src={project.image}
+                        alt={project.title}
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+                      />
+                    </div>
+                  )}
+                  <div className="p-5 flex flex-col flex-1">
+                    <div className="flex items-center gap-1.5 mb-3">
+                      <span className="w-2 h-2 rounded-full bg-error" />
+                      <span className="w-2 h-2 rounded-full bg-secondary" />
+                      <span className="w-2 h-2 rounded-full bg-primary" />
+                      <span className="font-code-sm text-[10px] text-on-surface-variant ml-2">{project.terminalScript}</span>
+                    </div>
+                    <div className="flex items-start justify-between gap-3 mb-2">
+                      <h3 className="font-code-sm text-on-surface font-bold text-sm leading-snug">{project.title}</h3>
+                      {project.category && (
+                        <span className="shrink-0 rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 text-[10px] uppercase tracking-wider text-primary">
+                          {project.category}
+                        </span>
+                      )}
+                    </div>
+                    <p className="font-code-sm text-xs text-on-surface-variant leading-relaxed mb-3 line-clamp-2">
+                      {project.description}
+                    </p>
+                    <div className="flex flex-wrap gap-1 mb-4">
+                      {stack.map((s: string) => (
+                        <span key={s} className="text-primary text-[10px] font-code-sm">[{s}]</span>
+                      ))}
+                    </div>
+                    <div className="flex gap-4 mt-auto pt-3 border-t border-primary/10">
+                      {project.liveUrl && project.liveUrl !== "#" && (
+                        <a className="text-primary hover:underline font-code-sm text-xs font-bold" href={project.liveUrl} target="_blank" rel="noopener">[ LIVE_DEMO ]</a>
+                      )}
+                      {project.sourceUrl && project.sourceUrl !== "#" && (
+                        <a className="text-secondary hover:underline font-code-sm text-xs font-bold" href={project.sourceUrl} target="_blank" rel="noopener">[ SOURCE_CODE ]</a>
+                      )}
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="space-y-3">
+            {visibleProjects.map((project) => {
+              const stack = parseList(project.stack);
+              return (
+                <article key={project.id} className="terminal-border bg-surface-container-low p-4 flex items-start gap-4">
+                  {project.image && (
+                    <div className="relative w-20 h-20 shrink-0 rounded-lg overflow-hidden hidden sm:block">
+                      <Image
+                        src={project.image}
+                        alt={project.title}
+                        fill
+                        className="object-cover"
+                        sizes="80px"
+                      />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1 flex-wrap">
+                      <h3 className="font-code-sm text-on-surface font-bold text-sm">{project.title}</h3>
+                      {project.category && (
+                        <span className="rounded-full border border-primary/20 bg-primary/10 px-2 py-0.5 text-[9px] uppercase tracking-wider text-primary">
+                          {project.category}
+                        </span>
+                      )}
+                    </div>
+                    <p className="font-code-sm text-xs text-on-surface-variant leading-relaxed line-clamp-1 mb-2">
+                      {project.description}
+                    </p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <div className="flex flex-wrap gap-1">
+                        {stack.map((s: string) => (
+                          <span key={s} className="text-primary text-[10px] font-code-sm">[{s}]</span>
+                        ))}
+                      </div>
+                      <div className="flex gap-3 ml-auto">
+                        {project.liveUrl && project.liveUrl !== "#" && (
+                          <a className="text-primary hover:underline font-code-sm text-[10px] font-bold" href={project.liveUrl} target="_blank" rel="noopener">[ LIVE_DEMO ]</a>
+                        )}
+                        {project.sourceUrl && project.sourceUrl !== "#" && (
+                          <a className="text-secondary hover:underline font-code-sm text-[10px] font-bold" href={project.sourceUrl} target="_blank" rel="noopener">[ SOURCE_CODE ]</a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </article>
+              );
+            })}
+          </div>
+        )
       ) : (
         <div className="rounded-2xl border border-dashed border-outline-variant bg-surface-container-lowest/70 p-10 text-center text-on-surface-variant">
           No projects match this search yet.

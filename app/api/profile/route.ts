@@ -4,8 +4,12 @@ import { getProfile, updateProfile } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  const profile = await getProfile();
-  return NextResponse.json(profile);
+  try {
+    const profile = await getProfile();
+    return NextResponse.json(profile);
+  } catch {
+    return NextResponse.json(null);
+  }
 }
 
 export async function PUT(req: NextRequest) {

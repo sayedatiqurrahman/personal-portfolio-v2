@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { Project } from "@/lib/types";
 import Link from "next/link";
 
@@ -12,31 +13,44 @@ function ProjectCard({ project }: { project: Project }) {
   if (project.gridSpan === "12") {
     return (
       <article className={`${spanClass}`}>
-        <div className="terminal-border p-6 bg-surface-container-low relative overflow-hidden">
-          <div className="md:flex gap-12 items-center">
-            <div className="flex-1">
-              <div className="flex justify-between items-center mb-4 border-b border-primary/20 pb-2">
-                <span className="text-primary font-headline-md text-headline-md">{project.terminalScript}</span>
-                <div className="flex gap-1">
-                  <span className="w-2 h-2 rounded-full bg-error" />
-                  <span className="w-2 h-2 rounded-full bg-secondary" />
-                  <span className="w-2 h-2 rounded-full bg-primary" />
+        <div className="terminal-border bg-surface-container-low overflow-hidden">
+          {project.image && (
+            <div className="relative w-full aspect-video md:aspect-[3/1] overflow-hidden">
+              <Image
+                src={project.image}
+                alt={project.title}
+                fill
+                className="object-cover"
+                sizes="100vw"
+              />
+            </div>
+          )}
+          <div className="p-6">
+            <div className="md:flex gap-12 items-center">
+              <div className="flex-1">
+                <div className="flex justify-between items-center mb-4 border-b border-primary/20 pb-2">
+                  <span className="text-primary font-headline-md text-headline-md">{project.terminalScript}</span>
+                  <div className="flex gap-1">
+                    <span className="w-2 h-2 rounded-full bg-error" />
+                    <span className="w-2 h-2 rounded-full bg-secondary" />
+                    <span className="w-2 h-2 rounded-full bg-primary" />
+                  </div>
                 </div>
-              </div>
-              <h3 className="text-on-surface font-bold text-lg mb-2">{project.title}</h3>
-              <p className="text-on-surface-variant mb-4">{project.description}</p>
-              <div className="flex flex-wrap gap-2 mb-4">
-                {stack.map((s: string) => (
-                  <span key={s} className="px-2 py-1 bg-primary/10 border border-primary/20 rounded text-code-sm text-primary font-code-sm">{s}</span>
-                ))}
-              </div>
-              <div className="flex gap-4">
-                {project.liveUrl && project.liveUrl !== "#" && (
-                  <a className="text-primary hover:underline font-bold" href={project.liveUrl} target="_blank" rel="noopener noreferrer">[ LIVE_DEMO ]</a>
-                )}
-                {project.sourceUrl && project.sourceUrl !== "#" && (
-                  <a className="text-secondary hover:underline font-bold" href={project.sourceUrl} target="_blank" rel="noopener noreferrer">[ SOURCE_CODE ]</a>
-                )}
+                <h3 className="text-on-surface font-bold text-lg mb-2">{project.title}</h3>
+                <p className="text-on-surface-variant mb-4">{project.description}</p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {stack.map((s: string) => (
+                    <span key={s} className="px-2 py-1 bg-primary/10 border border-primary/20 rounded text-code-sm text-primary font-code-sm">{s}</span>
+                  ))}
+                </div>
+                <div className="flex gap-4">
+                  {project.liveUrl && project.liveUrl !== "#" && (
+                    <a className="text-primary hover:underline font-bold" href={project.liveUrl} target="_blank" rel="noopener noreferrer">[ LIVE_DEMO ]</a>
+                  )}
+                  {project.sourceUrl && project.sourceUrl !== "#" && (
+                    <a className="text-secondary hover:underline font-bold" href={project.sourceUrl} target="_blank" rel="noopener noreferrer">[ SOURCE_CODE ]</a>
+                  )}
+                </div>
               </div>
             </div>
           </div>
@@ -47,30 +61,43 @@ function ProjectCard({ project }: { project: Project }) {
 
   return (
     <article className={`${spanClass}`}>
-      <div className="terminal-border p-6 bg-surface-container-low relative overflow-hidden h-full">
-        <div className="flex justify-between items-center mb-4 border-b border-primary/20 pb-2">
-          <span className="text-primary font-headline-md text-headline-md">{project.terminalScript}</span>
-          <div className="flex gap-1">
-            <span className="w-2 h-2 rounded-full bg-error" />
-            <span className="w-2 h-2 rounded-full bg-secondary" />
-            <span className="w-2 h-2 rounded-full bg-primary" />
+      <div className="terminal-border bg-surface-container-low overflow-hidden h-full flex flex-col">
+        {project.image && (
+          <div className="relative w-full aspect-video overflow-hidden border-b border-outline-variant/20">
+            <Image
+              src={project.image}
+              alt={project.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
           </div>
-        </div>
-        <div className="space-y-3 font-code-sm">
-          <h3 className="text-on-surface font-bold">{project.title}</h3>
-          <p className="text-on-surface-variant">{project.description}</p>
-          <div className="flex flex-wrap gap-1">
-            {stack.map((s: string) => (
-              <span key={s} className="text-primary text-xs">[{s}]</span>
-            ))}
+        )}
+        <div className="p-6 flex flex-col flex-1">
+          <div className="flex justify-between items-center mb-4 border-b border-primary/20 pb-2">
+            <span className="text-primary font-headline-md text-headline-md">{project.terminalScript}</span>
+            <div className="flex gap-1">
+              <span className="w-2 h-2 rounded-full bg-error" />
+              <span className="w-2 h-2 rounded-full bg-secondary" />
+              <span className="w-2 h-2 rounded-full bg-primary" />
+            </div>
           </div>
-          <div className="flex gap-4 mt-4 pt-4 border-t border-primary/10">
-            {project.liveUrl && project.liveUrl !== "#" && (
-              <a className="text-primary hover:underline" href={project.liveUrl} target="_blank" rel="noopener noreferrer">[ LIVE_DEMO ]</a>
-            )}
-            {project.sourceUrl && project.sourceUrl !== "#" && (
-              <a className="text-secondary hover:underline" href={project.sourceUrl} target="_blank" rel="noopener noreferrer">[ SOURCE_CODE ]</a>
-            )}
+          <div className="space-y-3 font-code-sm flex-1 flex flex-col">
+            <h3 className="text-on-surface font-bold">{project.title}</h3>
+            <p className="text-on-surface-variant">{project.description}</p>
+            <div className="flex flex-wrap gap-1">
+              {stack.map((s: string) => (
+                <span key={s} className="text-primary text-xs">[{s}]</span>
+              ))}
+            </div>
+            <div className="flex gap-4 mt-auto pt-4 border-t border-primary/10">
+              {project.liveUrl && project.liveUrl !== "#" && (
+                <a className="text-primary hover:underline" href={project.liveUrl} target="_blank" rel="noopener noreferrer">[ LIVE_DEMO ]</a>
+              )}
+              {project.sourceUrl && project.sourceUrl !== "#" && (
+                <a className="text-secondary hover:underline" href={project.sourceUrl} target="_blank" rel="noopener noreferrer">[ SOURCE_CODE ]</a>
+              )}
+            </div>
           </div>
         </div>
       </div>
