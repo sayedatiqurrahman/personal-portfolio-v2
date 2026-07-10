@@ -91,7 +91,7 @@ export default async function Home() {
         <Certificates certificates={certificates} />
         <Achievements achievements={achievements} />
         <Reviews reviews={reviews} />
-        <Contact />
+        <Contact email={profile?.email} />
       </main>
       <Footer profile={profile!} />
       <FAB />

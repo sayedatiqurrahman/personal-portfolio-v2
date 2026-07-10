@@ -4,15 +4,21 @@ import { useState } from "react";
 
 const CONTACT_INFO = [
   { icon: "chat", label: "WhatsApp", value: "+880 1625-625032", href: "https://wa.me/8801625625032" },
-  { icon: "mail", label: "Email", value: "sayedatiqurrahman@gmail.com", href: "mailto:sayedatiqurrahman@gmail.com" },
+  { icon: "mail", label: "Email", value: "s.atiqurrahman2003@gmail.com", href: "mailto:s.atiqurrahman2003@gmail.com" },
   { icon: "location_on", label: "Location", value: "Dhaka, Bangladesh", href: null },
   { icon: "schedule", label: "Availability", value: "Open for opportunities", href: null },
 ];
 
-export default function Contact() {
+export default function Contact({ email: profileEmail }: { email?: string }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+
+  const contactInfo = CONTACT_INFO.map((item) =>
+    item.label === "Email" && profileEmail
+      ? { ...item, value: profileEmail, href: `mailto:${profileEmail}` }
+      : item
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +39,7 @@ export default function Contact() {
             Feel free to reach out. I&apos;m always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
           </p>
           <div className="space-y-4 flex-1">
-            {CONTACT_INFO.map((item) => (
+            {contactInfo.map((item) => (
               <div key={item.label} className="flex items-center gap-4 bg-surface-container p-4 rounded-lg border border-outline-variant/20">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <span className="material-symbols-outlined text-primary text-xl">{item.icon}</span>
