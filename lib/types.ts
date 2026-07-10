@@ -75,6 +75,7 @@ export interface Certificate {
   date: string;
   url: string;
   image: string;
+  gridSpan: string;
   sortOrder: number;
 }
 

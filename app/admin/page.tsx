@@ -19,7 +19,7 @@ interface Project { id: number; title: string; category: string; description: st
 interface Skill { id: number; name: string; icon: string; percent: number; level: string; category: string; sortOrder: number; }
 interface Education { id: number; institution: string; degree: string; field: string;
   startDate: string; endDate: string; description: string; sortOrder: number; }
-interface Certificate { id: number; name: string; issuer: string; date: string; url: string; image: string; sortOrder: number; }
+interface Certificate { id: number; name: string; issuer: string; date: string; url: string; image: string; gridSpan: string; sortOrder: number; }
 interface Review { id: number; clientName: string; company: string; rating: number; text: string; date: string; sortOrder: number; }
 interface TermInfo { id: number; key: string; label: string; value: string; sortOrder: number; }
 
@@ -571,7 +571,27 @@ export default function AdminPage() {
                     {inp("Date", c.date, (v) => { const n = [...certificates]; n[certificates.indexOf(c)] = { ...c, date: v }; setCertificates(n); })}
                     {inp("URL", c.url, (v) => { const n = [...certificates]; n[certificates.indexOf(c)] = { ...c, url: v }; setCertificates(n); })}
                   </div>
-                  {inp("Image URL", c.image, (v) => { const n = [...certificates]; n[certificates.indexOf(c)] = { ...c, image: v }; setCertificates(n); })}
+                  <div className="grid grid-cols-2 gap-3">
+                    {inp("Image URL", c.image, (v) => { const n = [...certificates]; n[certificates.indexOf(c)] = { ...c, image: v }; setCertificates(n); })}
+                    {inp("Sort Order", String(c.sortOrder), (v) => { const n = [...certificates]; n[certificates.indexOf(c)] = { ...c, sortOrder: parseInt(v) || 0 }; setCertificates(n); })}
+                  </div>
+                  <div>
+                    <label className="text-label-caps text-on-surface-variant block mb-1">Grid Span</label>
+                    <select
+                      className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
+                      value={c.gridSpan}
+                      onChange={(e) => {
+                        const n = [...certificates];
+                        n[certificates.indexOf(c)] = { ...c, gridSpan: e.target.value };
+                        setCertificates(n);
+                      }}
+                    >
+                      <option value="4">4</option>
+                      <option value="6">6</option>
+                      <option value="8">8</option>
+                      <option value="12">12</option>
+                    </select>
+                  </div>
                 </div>
               ))}
             </div>

@@ -84,6 +84,7 @@ model Certificate {
   date      String @default("")
   url       String @default("")
   image     String @default("")
+  gridSpan  String @default("4")
   sortOrder Int    @default(0)
 }
 
