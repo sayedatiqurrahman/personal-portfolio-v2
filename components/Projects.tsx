@@ -31,7 +31,7 @@ function ProjectCard({ project }: { project: Project }) {
       <article className={spanClass}>
         <div className="terminal-border bg-surface-container-low overflow-hidden md:flex">
           {project.image && (
-            <div className="relative w-full md:w-[360px] shrink-0 aspect-video md:aspect-[4/3] md:self-stretch md:max-h-[320px]">
+            <div className="relative w-full md:w-[360px] shrink-0 aspect-video md:h-[240px]">
               <Image
                 src={project.image}
                 alt={project.title}
@@ -41,7 +41,7 @@ function ProjectCard({ project }: { project: Project }) {
               />
             </div>
           )}
-          <div className="p-6 flex-1 flex flex-col justify-center">
+          <div className="p-6 flex-1">
             <div className="flex justify-between items-center mb-4 border-b border-primary/20 pb-2">
               <span className="text-primary font-headline-md text-headline-md">{project.terminalScript}</span>
               <div className="flex gap-1">
