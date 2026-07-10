@@ -128,8 +128,9 @@ export default function Hero({ profile, roles, terminalInfo }: { profile: Profil
             <div className="flex-1 text-primary space-y-4">
               <p className="text-primary-fixed-dim font-bold">{profile.terminalUser}</p>
               <p className="border-b border-primary/20 pb-2" aria-hidden="true">-----------------</p>
-              <h1 className="text-lg font-bold mb-4">
-                {profile.name}: <GlitchTypewriter roles={roles} />
+              <h1 className="text-lg font-bold mb-4 flex flex-col md:block">
+                <span>{profile.name}:</span>{" "}
+                <GlitchTypewriter roles={roles} />
               </h1>
               <div className="grid grid-cols-[120px_1fr] gap-y-2" role="list">
                 {terminalInfo.map((info) => (
