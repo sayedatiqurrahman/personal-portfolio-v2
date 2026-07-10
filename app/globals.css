@@ -3,12 +3,36 @@
 @tailwind utilities;
 
 @layer base {
+  :root,
+  [data-accent="green"] {
+    --accent: 75 226 119;
+  }
+  [data-accent="yellow"] {
+    --accent: 234 179 8;
+  }
+  [data-accent="cyan"] {
+    --accent: 6 182 212;
+  }
+  [data-accent="magenta"] {
+    --accent: 217 70 239;
+  }
+  [data-accent="orange"] {
+    --accent: 249 115 22;
+  }
+  [data-accent="pink"] {
+    --accent: 236 72 153;
+  }
+  [data-accent="lime"] {
+    --accent: 132 204 22;
+  }
+
   html {
     scroll-behavior: smooth;
   }
 
   *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-[#4be277];
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 2px;
   }
 }
 
