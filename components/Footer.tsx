@@ -5,7 +5,7 @@ export default function Footer({ profile }: { profile: Profile }) {
     <footer className="bg-surface-container-lowest border-t border-outline-variant/30 mt-section-padding">
       <div className="flex flex-col md:flex-row justify-between items-center w-full px-6 py-stack-lg max-w-container-max mx-auto gap-stack-md">
         <div className="text-label-caps font-label-caps text-on-surface-variant">
-          {profile.footerText}
+          {profile.footerText || `© ${new Date().getFullYear()} ${profile.name}. All rights reserved.`}
         </div>
         <div className="flex gap-stack-lg">
           {profile.github && profile.github !== "#" && (
