@@ -26,13 +26,13 @@ export default function Contact() {
       <h2 className="font-headline-md text-headline-md text-primary mb-8">
         ./contact --init
       </h2>
-      <div className="grid md:grid-cols-2 gap-12">
+      <div className="grid md:grid-cols-2 gap-12 items-stretch">
         {/* Contact Info */}
-        <div className="space-y-6">
+        <div className="flex flex-col gap-6">
           <p className="text-on-surface-variant leading-relaxed">
             Feel free to reach out. I&apos;m always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
           </p>
-          <div className="space-y-4">
+          <div className="space-y-4 flex-1">
             {CONTACT_INFO.map((item) => (
               <div key={item.label} className="flex items-center gap-4 bg-surface-container p-4 rounded-lg border border-outline-variant/20">
                 <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -54,7 +54,7 @@ export default function Contact() {
         </div>
 
         {/* Contact Form */}
-        <form onSubmit={handleSubmit} className="space-y-6 bg-surface-container p-8 rounded-xl border border-outline-variant/20">
+        <form onSubmit={handleSubmit} className="space-y-6 bg-surface-container p-8 rounded-xl border border-outline-variant/20 flex flex-col">
           <div className="space-y-2">
             <label className="font-label-caps text-on-surface-variant" htmlFor="name">Identifier</label>
             <input
@@ -79,10 +79,10 @@ export default function Contact() {
               required
             />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 flex-1 flex flex-col">
             <label className="font-label-caps text-on-surface-variant" htmlFor="message">Payload</label>
             <textarea
-              className="w-full bg-background border border-outline-variant/30 rounded p-3 focus:border-primary focus:ring-0 outline-none transition-all font-code-sm h-32"
+              className="w-full bg-background border border-outline-variant/30 rounded p-3 focus:border-primary focus:ring-0 outline-none transition-all font-code-sm flex-1 min-h-32"
               id="message"
               placeholder="Type your message here..."
               value={message}
