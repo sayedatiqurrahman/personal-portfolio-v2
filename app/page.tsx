@@ -28,13 +28,13 @@ export async function generateMetadata(): Promise<Metadata> {
       title: `${profile.name} | Full Stack Developer`,
       description,
       url: "/",
-      images: profile.profileImage ? [{ url: profile.profileImage, width: 800, height: 1000, alt: profile.name }] : [],
+      images: [{ url: "https://images.pexels.com/photos/38512418/pexels-photo-38512418.jpeg?w=1200&h=630&fit=crop", width: 1200, height: 630, alt: profile.name }],
     },
     twitter: {
       card: "summary_large_image",
       title: `${profile.name} | Full Stack Developer`,
       description,
-      images: profile.profileImage ? [profile.profileImage] : [],
+      images: [{ url: "https://images.pexels.com/photos/38512418/pexels-photo-38512418.jpeg?w=1200&h=630&fit=crop", width: 1200, height: 630, alt: profile.name }],
     },
   };
 }
@@ -51,8 +51,8 @@ export default async function Home() {
     name: profile?.name,
     alternateName: profile?.shortName,
     description: profile?.tagline || profile?.bio,
-    image: profile?.profileImage,
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://atiq.is-a.dev",
+    image: "https://images.pexels.com/photos/38512418/pexels-photo-38512418.jpeg?w=800",
+    url: "https://atiq.is-a.dev",
     sameAs: [
       profile?.github,
       profile?.linkedin,

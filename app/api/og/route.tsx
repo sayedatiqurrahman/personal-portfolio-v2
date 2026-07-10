@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   const name = profile?.name || "Sayed Atiqur Rahman";
   const tagline = profile?.tagline || "";
   const bio = profile?.bio || "";
-  const imgSrc = new URL("/og-profile-pic.webp", req.url).toString();
+  const imgSrc = "https://images.pexels.com/photos/38512418/pexels-photo-38512418.jpeg?w=400&h=400&fit=crop";
 
   return new ImageResponse(
     (

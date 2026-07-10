@@ -16,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
   variable: "--font-jetbrains-mono",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://atiq.is-a.dev";
+const siteUrl = "https://atiq.is-a.dev";
 
 export const viewport: Viewport = {
   themeColor: "#0a0a0a",
@@ -50,7 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
     authors: [{ name: "Sayed Atiqur Rahman" }],
     creator: "Sayed Atiqur Rahman",
     publisher: "Sayed Atiqur Rahman",
-    icons: profile?.profileImage ? [{ rel: "icon", url: profile.profileImage }] : [],
+    icons: [{ rel: "icon", url: "https://images.pexels.com/photos/38512418/pexels-photo-38512418.jpeg?w=64", type: "image/jpeg" }],
     openGraph: {
       type: "website",
       locale: "en_US",
@@ -59,14 +59,14 @@ export async function generateMetadata(): Promise<Metadata> {
       description:
         "MERN Stack Developer specializing in TypeScript, React, Next.js, Node.js, and modern web architectures.",
       url: siteUrl,
-      images: [{ url: "/api/og", width: 1200, height: 630 }],
+      images: [{ url: "https://images.pexels.com/photos/38512418/pexels-photo-38512418.jpeg?w=1200&h=630&fit=crop", width: 1200, height: 630, alt: "Sayed Atiqur Rahman" }],
     },
     twitter: {
       card: "summary_large_image",
       title: "Sayed Atiqur Rahman | Full Stack Developer",
       description:
         "MERN Stack Developer specializing in TypeScript, React, Next.js, Node.js, and modern web architectures.",
-      images: [{ url: "/api/og", width: 1200, height: 630 }],
+      images: [{ url: "https://images.pexels.com/photos/38512418/pexels-photo-38512418.jpeg?w=1200&h=630&fit=crop", width: 1200, height: 630, alt: "Sayed Atiqur Rahman" }],
     },
     robots: {
       index: true,
