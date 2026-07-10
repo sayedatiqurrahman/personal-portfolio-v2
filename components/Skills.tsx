@@ -12,25 +12,25 @@ const LEVEL_PERCENT: Record<string, number> = {
 };
 
 const LEVEL_CARD: Record<string, string> = {
-  expertise: "border-primary/40 bg-primary/[0.04] hover:bg-primary/[0.08] hover:border-primary/60",
+  expertise: "border-[#4be277]/40 bg-[#4be277]/[0.04] hover:bg-[#4be277]/[0.08] hover:border-[#4be277]/60",
   comfortable: "border-secondary/40 bg-secondary/[0.04] hover:bg-secondary/[0.08] hover:border-secondary/60",
   familiar: "border-tertiary/40 bg-tertiary/[0.04] hover:bg-tertiary/[0.08] hover:border-tertiary/60",
 };
 
 const LEVEL_BG: Record<string, string> = {
-  expertise: "bg-primary/20",
+  expertise: "bg-[#4be277]/20",
   comfortable: "bg-secondary/20",
   familiar: "bg-tertiary/20",
 };
 
 const LEVEL_TEXT: Record<string, string> = {
-  expertise: "text-primary",
+  expertise: "text-[#4be277]",
   comfortable: "text-secondary",
   familiar: "text-tertiary",
 };
 
 const LEVEL_BAR: Record<string, string> = {
-  expertise: "bg-primary",
+  expertise: "bg-[#4be277]",
   comfortable: "bg-secondary",
   familiar: "bg-tertiary",
 };
