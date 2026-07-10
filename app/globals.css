@@ -51,29 +51,29 @@
 /* Terminal window */
 .terminal-window {
   border: 1px solid #3d4a3d;
-  box-shadow: 0 0 20px rgba(74, 225, 118, 0.1);
+  box-shadow: 0 0 20px rgb(var(--accent) / 0.1);
 }
 
 /* Terminal border */
 .terminal-border {
-  border: 1px solid rgba(75, 226, 119, 0.3);
+  border: 1px solid rgb(var(--accent) / 0.3);
   transition: all 0.3s ease;
 }
 
 .terminal-border:hover {
-  box-shadow: 0 0 15px rgba(75, 226, 119, 0.2);
-  border-color: rgba(75, 226, 119, 0.6);
+  box-shadow: 0 0 15px rgb(var(--accent) / 0.25);
+  border-color: rgb(var(--accent) / 0.6);
 }
 
 /* Terminal glow */
 .terminal-glow {
-  border: 1px solid rgba(75, 226, 119, 0.3);
+  border: 1px solid rgb(var(--accent) / 0.3);
   transition: all 0.3s ease;
 }
 
 .terminal-glow:hover {
-  box-shadow: 0 0 15px rgba(75, 226, 119, 0.2);
-  border-color: rgba(75, 226, 119, 0.6);
+  box-shadow: 0 0 15px rgb(var(--accent) / 0.25);
+  border-color: rgb(var(--accent) / 0.6);
 }
 
 /* Scanline overlay */
