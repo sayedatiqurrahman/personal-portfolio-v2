@@ -142,7 +142,7 @@ export default function Projects({ projects }: { projects: Project[] }) {
         {hasMoreProjects && (
           <Link
             href="/projects"
-            className="inline-flex items-center gap-2 self-start rounded-full border border-primary/30 bg-surface-container px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
+            className="inline-flex items-center gap-2 self-end md:self-auto rounded-full border border-primary/30 bg-surface-container px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
           >
             <span className="material-symbols-outlined text-base">folder_open</span>
             cd all-projects
