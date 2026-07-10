@@ -124,6 +124,8 @@ function ProjectCard({ project }: { project: Project }) {
 }
 
 export default function Projects({ projects }: { projects: Project[] }) {
+  if (!projects?.length) return null;
+
   const featuredProjects = projects.filter(p => p.featured > 0).sort((a, b) => a.sortOrder - b.sortOrder);
   const hasMoreProjects = projects.some(p => p.featured === 0);
 

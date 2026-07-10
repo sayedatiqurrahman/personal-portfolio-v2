@@ -39,6 +39,8 @@ export default function Skills({ skills }: { skills: Skill[] }) {
   const [view, setView] = useState<ViewMode>("normal");
   const [levelFilter, setLevelFilter] = useState<string>("all");
 
+  if (!skills?.length) return null;
+
   const categories = [...new Set(skills.map((s) => s.category))].filter(Boolean);
   const levels = [...new Set(skills.map((s) => s.level))];
   const filtered = levelFilter === "all" ? skills : skills.filter((s) => s.level === levelFilter);

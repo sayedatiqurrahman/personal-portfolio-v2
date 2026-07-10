@@ -115,15 +115,21 @@ export default function Hero({ profile, roles, terminalInfo }: { profile: Profil
           </div>
           <div className="p-8 md:flex gap-12 items-start">
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
-              <Image
-                alt={`Portrait of ${profile.name} - Full Stack Developer`}
-                className="w-full aspect-[0.8] object-cover border-2 border-primary/20 rounded grayscale contrast-125"
-                style={{ boxShadow: '0 0 20px rgba(74,225,118,0.2)' }}
-                src={profile.profileImage}
-                width={400}
-                height={500}
-                priority
-              />
+              {profile.profileImage ? (
+                <Image
+                  alt={`Portrait of ${profile.name} - Full Stack Developer`}
+                  className="w-full aspect-[0.8] object-cover border-2 border-primary/20 rounded grayscale contrast-125"
+                  style={{ boxShadow: '0 0 20px rgba(74,225,118,0.2)' }}
+                  src={profile.profileImage}
+                  width={400}
+                  height={500}
+                  priority
+                />
+              ) : (
+                <div className="w-full aspect-[0.8] border-2 border-primary/20 rounded bg-surface-container flex items-center justify-center">
+                  <span className="material-symbols-outlined text-6xl text-primary/30">person</span>
+                </div>
+              )}
             </div>
             <div className="flex-1 text-primary space-y-4">
               <p className="text-primary-fixed-dim font-bold">{profile.terminalUser}</p>

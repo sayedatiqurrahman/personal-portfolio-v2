@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { getEducation, createEducation, updateEducation, deleteEducation } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -15,17 +16,20 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const item = await createEducation(body);
+  revalidatePath("/");
   return NextResponse.json(item);
 }
 
 export async function PUT(req: NextRequest) {
   const { id, ...data } = await req.json();
   await updateEducation(id, data);
+  revalidatePath("/");
   return NextResponse.json({ ok: true });
 }
 
 export async function DELETE(req: NextRequest) {
   const { id } = await req.json();
   await deleteEducation(id);
+  revalidatePath("/");
   return NextResponse.json({ ok: true });
 }

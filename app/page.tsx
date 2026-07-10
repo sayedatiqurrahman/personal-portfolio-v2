@@ -13,37 +13,48 @@ import Footer from "@/components/Footer";
 import FAB from "@/components/FAB";
 import { getProfile, getRoles, getProjects, getSkills, getEducation, getCertificates, getAchievements, getReviews, getTerminalInfo } from "@/lib/db";
 
-export const dynamic = "force-dynamic";
+async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await fn();
+  } catch {
+    return fallback;
+  }
+}
 
 export async function generateMetadata(): Promise<Metadata> {
-  const profile = await getProfile();
+  const profile = await safe(getProfile, null);
   if (!profile) return {};
 
   const description = profile.tagline || profile.bio || `${profile.name} - Full Stack Developer`;
 
   return {
-    title: `${profile.name} | Full Stack Developer`,
+    title: `${profile.name || "Portfolio"} | Full Stack Developer`,
     description,
     openGraph: {
-      title: `${profile.name} | Full Stack Developer`,
+      title: `${profile.name || "Portfolio"} | Full Stack Developer`,
       description,
       url: "/",
-      images: [{ url: "https://images.pexels.com/photos/38512418/pexels-photo-38512418.jpeg?w=1200&h=630&fit=crop", width: 1200, height: 630, alt: profile.name }],
+      images: [{ url: "https://images.pexels.com/photos/38512418/pexels-photo-38512418.jpeg?w=1200&h=630&fit=crop", width: 1200, height: 630, alt: profile.name || "Developer" }],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${profile.name} | Full Stack Developer`,
+      title: `${profile.name || "Portfolio"} | Full Stack Developer`,
       description,
-      images: [{ url: "https://images.pexels.com/photos/38512418/pexels-photo-38512418.jpeg?w=1200&h=630&fit=crop", width: 1200, height: 630, alt: profile.name }],
+      images: [{ url: "https://images.pexels.com/photos/38512418/pexels-photo-38512418.jpeg?w=1200&h=630&fit=crop", width: 1200, height: 630, alt: profile.name || "Developer" }],
     },
   };
 }
 
 export default async function Home() {
-  const [profile, roles, projects, skills, education, certificates, achievements, reviews, terminalInfo] = await Promise.all([
-    getProfile(), getRoles(), getProjects(), getSkills(),
-    getEducation(), getCertificates(), getAchievements(), getReviews(), getTerminalInfo(),
-  ]);
+  const profile = await safe(getProfile, null);
+  const roles = await safe(getRoles, []);
+  const projects = await safe(getProjects, []);
+  const skills = await safe(getSkills, []);
+  const education = await safe(getEducation, []);
+  const certificates = await safe(getCertificates, []);
+  const achievements = await safe(getAchievements, []);
+  const reviews = await safe(getReviews, []);
+  const terminalInfo = await safe(getTerminalInfo, []);
 
   const jsonLd = {
     "@context": "https://schema.org",

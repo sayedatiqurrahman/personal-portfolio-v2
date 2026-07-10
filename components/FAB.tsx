@@ -18,7 +18,7 @@ export default function FAB() {
       </a>
       <a
         className="w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform"
-        href="#about"
+        href="#contact"
         aria-label="Contact section"
       >
         <span className="material-symbols-outlined">mail</span>

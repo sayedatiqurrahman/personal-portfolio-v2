@@ -5,10 +5,17 @@ import Footer from "@/components/Footer";
 import FAB from "@/components/FAB";
 import { getProfile, getProjects } from "@/lib/db";
 
-export const dynamic = "force-dynamic";
+async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    return await fn();
+  } catch {
+    return fallback;
+  }
+}
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [profile, projects] = await Promise.all([getProfile(), getProjects()]);
+  const profile = await safe(getProfile, null);
+  const projects = await safe(getProjects, []);
 
   return {
     title: "Projects",
@@ -21,12 +28,13 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProjectsPage() {
-  const [profile, projects] = await Promise.all([getProfile(), getProjects()]);
+  const profile = await safe(getProfile, null);
+  const projects = await safe(getProjects, []);
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "Projects by Sayed Atiqur Rahman",
+    name: `Projects by ${profile?.name || "Developer"}`,
     description: `A collection of ${projects.length} software development projects.`,
     url: "/projects",
     author: {
