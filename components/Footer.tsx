@@ -1,6 +1,7 @@
 import type { Profile } from "@/lib/types";
 
 export default function Footer({ profile }: { profile: Profile }) {
+  if (!profile) return null;
   return (
     <footer className="bg-surface-container-lowest border-t border-outline-variant/30 mt-section-padding">
       <div className="flex flex-col md:flex-row justify-between items-center w-full px-6 py-stack-lg max-w-container-max mx-auto gap-stack-md">
