@@ -1,4 +1,5 @@
 import type { Project } from "@/lib/types";
+import Link from "next/link";
 
 function ProjectCard({ project }: { project: Project }) {
   const stack = (() => { try { return JSON.parse(project.stack); } catch { return []; } })();
@@ -78,13 +79,13 @@ function ProjectCard({ project }: { project: Project }) {
   );
 }
 
-export default function Projects({ projects, limit = 6 }: { projects: Project[]; limit?: number }) {
-  const visibleProjects = projects.slice(0, limit);
+export default function Projects({ projects, limit = 3 }: { projects: Project[]; limit?: number }) {
+  const visibleProjects = projects.filter(p => p.featured > 0).sort((a, b) => a.featured - b.featured).slice(0, limit);
   const hasMoreProjects = projects.length > limit;
 
   return (
     <section className="max-w-container-max mx-auto px-6 py-section-padding" id="projects">
-      <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-4">
+      <div className="mb-12 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div>
           <h2 className="font-headline-md text-headline-md text-primary mb-2">
             ./exec list_projects
@@ -93,6 +94,16 @@ export default function Projects({ projects, limit = 6 }: { projects: Project[];
             Technical solutions built with the modern stack.
           </p>
         </div>
+
+        {hasMoreProjects && (
+          <a
+            href="/projects"
+            className="inline-flex items-center gap-2 self-start rounded-full border border-primary/30 bg-surface-container px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
+          >
+            <span className="material-symbols-outlined text-base">folder_open</span>
+            cd all-projects
+          </a>
+        )}
       </div>
       <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
         {visibleProjects.map((project) => (
@@ -100,17 +111,6 @@ export default function Projects({ projects, limit = 6 }: { projects: Project[];
         ))}
       </div>
 
-      {hasMoreProjects && (
-        <div className="mt-8 flex justify-center">
-          <a
-            href="/projects"
-            className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-surface-container px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-primary/10"
-          >
-            <span className="material-symbols-outlined text-base">folder_open</span>
-            cd all-projects
-          </a>
-        </div>
-      )}
     </section>
   );
 }

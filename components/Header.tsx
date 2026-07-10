@@ -1,16 +1,27 @@
 "use client";
 
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { Profile } from "@/lib/types";
 
 export default function Header({ profile }: { profile: Profile }) {
   const [scrolled, setScrolled] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 50);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  const navItems = [
+    { label: "Home", href: pathname === "/projects" ? "/#home" : "#home" },
+    { label: "Projects", href: pathname === "/projects" ? "/projects" : "#projects" },
+    { label: "Skills", href: pathname === "/projects" ? "/#skills" : "#skills" },
+    { label: "Education", href: pathname === "/projects" ? "/#education" : "#education" },
+    { label: "Reviews", href: pathname === "/projects" ? "/#reviews" : "#reviews" },
+    { label: "About", href: pathname === "/projects" ? "/#about" : "#about" },
+  ];
 
   return (
     <header
@@ -23,13 +34,13 @@ export default function Header({ profile }: { profile: Profile }) {
           {profile.terminalPrompt}
         </div>
         <nav className="hidden md:flex items-center gap-stack-lg">
-          {["Home", "Projects", "Skills", "Education", "Reviews", "About"].map((label) => (
+          {navItems.map((item) => (
             <a
-              key={label}
-              href={`#${label.toLowerCase()}`}
+              key={item.label}
+              href={item.href}
               className="text-on-surface-variant hover:text-primary transition-colors font-label-caps"
             >
-              {label}
+              {item.label}
             </a>
           ))}
         </nav>

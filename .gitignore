@@ -1,8 +1,11 @@
 node_modules/
 .next/
 out/
+.env
 .env.local
 data/
 public/uploads/
+prisma/dev.db
+tsconfig.tsbuildinfo
 
 /lib/generated/prisma

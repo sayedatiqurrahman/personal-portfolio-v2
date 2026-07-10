@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 
 type Tab = "profile" | "roles" | "projects" | "skills" | "terminal" | "education" | "certificates" | "reviews" | "resume";
 
@@ -59,6 +59,11 @@ export default function AdminPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [termInfo, setTermInfo] = useState<TermInfo[]>([]);
 
+  const [projectSearch, setProjectSearch] = useState("");
+  const [projectCategory, setProjectCategory] = useState("All");
+  const [projectPage, setProjectPage] = useState(1);
+  const projectPerPage = 10;
+
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
@@ -81,7 +86,7 @@ export default function AdminPage() {
   useEffect(() => { if (authed) loadAll(); }, [authed, loadAll]);
 
   const login = () => {
-    if (password === (process.env.NEXT_PUBLIC_ADMIN_PASS || "admin123")) setAuthed(true);
+    if (password === (process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "admin123")) setAuthed(true);
   };
 
   const flash = () => { setSaved(true); setTimeout(() => setSaved(false), 2000); };
@@ -89,7 +94,8 @@ export default function AdminPage() {
   // ─── Generic CRUD helpers ─────────────────────────────
   async function saveProfile() {
     if (!profile) return;
-    await api("/profile", { method: "PUT", body: JSON.stringify(profile) });
+    const updated = await api<Profile>("/profile", { method: "PUT", body: JSON.stringify(profile) });
+    setProfile(updated);
     flash();
   }
 
@@ -99,6 +105,7 @@ export default function AdminPage() {
   }
   async function saveRole(r: Role) {
     await api("/roles", { method: "PUT", body: JSON.stringify(r) });
+    await loadAll();
     flash();
   }
   async function removeRole(id: number) {
@@ -112,6 +119,7 @@ export default function AdminPage() {
   }
   async function saveProject(p: Project) {
     await api("/projects", { method: "PUT", body: JSON.stringify(p) });
+    await loadAll();
     flash();
   }
   async function removeProject(id: number) {
@@ -125,6 +133,7 @@ export default function AdminPage() {
   }
   async function saveSkill(s: Skill) {
     await api("/skills", { method: "PUT", body: JSON.stringify(s) });
+    await loadAll();
     flash();
   }
   async function removeSkill(id: number) {
@@ -138,6 +147,7 @@ export default function AdminPage() {
   }
   async function saveEducation(e: Education) {
     await api("/education", { method: "PUT", body: JSON.stringify(e) });
+    await loadAll();
     flash();
   }
   async function removeEducation(id: number) {
@@ -151,6 +161,7 @@ export default function AdminPage() {
   }
   async function saveCertificate(c: Certificate) {
     await api("/certificates", { method: "PUT", body: JSON.stringify(c) });
+    await loadAll();
     flash();
   }
   async function removeCertificate(id: number) {
@@ -164,6 +175,7 @@ export default function AdminPage() {
   }
   async function saveReview(r: Review) {
     await api("/reviews", { method: "PUT", body: JSON.stringify(r) });
+    await loadAll();
     flash();
   }
   async function removeReview(id: number) {
@@ -177,12 +189,32 @@ export default function AdminPage() {
   }
   async function saveTermInfo(t: TermInfo) {
     await api("/terminal-info", { method: "PUT", body: JSON.stringify(t) });
+    await loadAll();
     flash();
   }
   async function removeTermInfo(id: number) {
     await api("/terminal-info", { method: "DELETE", body: JSON.stringify({ id }) });
     setTermInfo(termInfo.filter((t) => t.id !== id));
   }
+
+  const categoryOptions = Array.from(new Set(projects.map((p) => p.category).filter(Boolean))).sort();
+
+  const filteredProjects = useMemo(() => {
+    let result = projects;
+    if (projectCategory !== "All") result = result.filter(p => p.category === projectCategory);
+    const q = projectSearch.trim().toLowerCase();
+    if (q) result = result.filter(p =>
+      p.title.toLowerCase().includes(q) ||
+      p.description.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q) ||
+      p.stack.toLowerCase().includes(q) ||
+      p.tags.toLowerCase().includes(q)
+    );
+    return result;
+  }, [projects, projectSearch, projectCategory]);
+
+  const totalProjectPages = Math.max(1, Math.ceil(filteredProjects.length / projectPerPage));
+  const visibleProjects = filteredProjects.slice((projectPage - 1) * projectPerPage, projectPage * projectPerPage);
 
   // ─── Login screen ─────────────────────────────────────
   if (!authed) {
@@ -195,7 +227,7 @@ export default function AdminPage() {
             placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && login()} />
           <button onClick={login} className="w-full py-3 bg-primary text-on-primary font-bold rounded hover:bg-primary-fixed transition-colors">AUTHENTICATE</button>
-          {password && password !== (process.env.NEXT_PUBLIC_ADMIN_PASS || "admin123") && (
+          {password && password !== (process.env.NEXT_PUBLIC_ADMIN_PASSWORD || "admin123") && (
             <div className="text-error mt-4 text-sm">ACCESS DENIED</div>
           )}
         </div>
@@ -243,9 +275,7 @@ export default function AdminPage() {
     </div>
   );
 
-  const categoryOptions = Array.from(new Set(projects.map((p) => p.category).filter(Boolean))).sort();
-
-  // ─── Tab content ──────────────────────────────────────
+  // ─── Tab content ────────────────────────────────────── ──────────────────────────────────────
   return (
     <div className="min-h-screen bg-background text-on-surface">
       <header className="bg-surface-container border-b border-outline-variant p-4 flex justify-between items-center">
@@ -273,7 +303,10 @@ export default function AdminPage() {
           {/* ─── Profile ──────────────────────────────── */}
           {tab === "profile" && profile && (
             <div className="space-y-4">
-              <SectionHeader title="Profile Settings" onAdd={saveProfile} />
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-lg font-bold text-primary">Profile Settings</h2>
+                <button onClick={saveProfile} className="px-4 py-2 bg-primary text-on-primary rounded text-sm font-bold">Save Changes</button>
+              </div>
               <div className="grid grid-cols-2 gap-4">
                 {inp("Full Name", profile.name, (v) => setProfile({ ...profile, name: v }))}
                 {inp("Short Name", profile.shortName, (v) => setProfile({ ...profile, shortName: v }))}
@@ -340,11 +373,34 @@ export default function AdminPage() {
           {/* ─── Projects ─────────────────────────────── */}
           {tab === "projects" && (
             <div className="space-y-4">
-              <SectionHeader title="Projects" onAdd={addProject} />
-              {projects.map((p) => (
+              <div className="flex justify-between items-center">
+                <h2 className="text-lg font-bold text-primary">Projects</h2>
+                <button onClick={addProject} className="px-4 py-2 bg-primary text-on-primary rounded text-sm font-bold">+ Add Project</button>
+              </div>
+
+              <div className="flex gap-3">
+                <input type="search" placeholder="Search projects..." value={projectSearch}
+                  onChange={(e) => { setProjectSearch(e.target.value); setProjectPage(1); }}
+                  className="flex-1 bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none" />
+                <select value={projectCategory} onChange={(e) => { setProjectCategory(e.target.value); setProjectPage(1); }}
+                  className="bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none">
+                  <option value="All">All Categories</option>
+                  {categoryOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                </select>
+              </div>
+
+              <div className="text-sm text-on-surface-variant flex justify-between">
+                <span>{filteredProjects.length} project{filteredProjects.length === 1 ? "" : "s"}</span>
+                {totalProjectPages > 1 && <span>Page {projectPage} of {totalProjectPages}</span>}
+              </div>
+
+              {visibleProjects.map((p) => (
                 <details key={p.id} className="bg-surface border border-outline-variant rounded">
                   <summary className="p-4 cursor-pointer flex justify-between items-center hover:bg-surface-variant">
-                    <span className="font-bold text-primary">{p.title}</span>
+                    <span className="font-bold text-primary">
+                      {p.featured > 0 && <span className="text-secondary mr-2">★{p.featured}</span>}
+                      {p.title}
+                    </span>
                     <div className="flex gap-3">
                       <button onClick={(e) => { e.stopPropagation(); saveProject(p); }} className="text-primary text-xs hover:underline">Save</button>
                       <button onClick={(e) => { e.stopPropagation(); removeProject(p.id); }} className="text-error text-xs hover:underline">Delete</button>
@@ -384,14 +440,28 @@ export default function AdminPage() {
                       {inp("Source URL", p.sourceUrl, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, sourceUrl: v }; setProjects(n); })}
                     </div>
                     {inp("Image URL", p.image, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, image: v }; setProjects(n); })}
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-4 gap-3">
                       {inp("Terminal Type", p.terminalType, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, terminalType: v }; setProjects(n); })}
                       {inp("Terminal Script", p.terminalScript, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, terminalScript: v }; setProjects(n); })}
                       {inp("Grid Span (4/8/12)", p.gridSpan, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, gridSpan: v }; setProjects(n); })}
+                      {numInp("Featured (0=no, 1-3=pos)", p.featured, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, featured: Math.min(3, Math.max(0, v)) }; setProjects(n); })}
                     </div>
                   </div>
                 </details>
               ))}
+
+              {totalProjectPages > 1 && (
+                <div className="flex justify-center gap-2 mt-6">
+                  <button onClick={() => setProjectPage(Math.max(1, projectPage - 1))} disabled={projectPage === 1}
+                    className="px-3 py-2 rounded text-sm bg-surface-variant text-on-surface disabled:opacity-50">Prev</button>
+                  {Array.from({ length: totalProjectPages }, (_, i) => i + 1).map(n => (
+                    <button key={n} onClick={() => setProjectPage(n)}
+                      className={`w-9 h-9 rounded text-sm ${projectPage === n ? 'bg-primary text-on-primary' : 'bg-surface-variant text-on-surface'}`}>{n}</button>
+                  ))}
+                  <button onClick={() => setProjectPage(Math.min(totalProjectPages, projectPage + 1))} disabled={projectPage === totalProjectPages}
+                    className="px-3 py-2 rounded text-sm bg-surface-variant text-on-surface disabled:opacity-50">Next</button>
+                </div>
+              )}
             </div>
           )}
 

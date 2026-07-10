@@ -103,34 +103,36 @@ export default function ProjectsArchive({ projects }: { projects: Project[] }) {
 
   return (
     <section className="max-w-container-max mx-auto px-6 py-section-padding" id="projects">
-      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-        <div>
-          <p className="font-label-caps text-primary mb-2">archive</p>
-          <h1 className="font-headline-md text-headline-md">./exec list_all_projects</h1>
-          <p className="mt-2 text-on-surface-variant">Search, filter, and browse the full project catalog.</p>
-        </div>
+      <div className="mb-8 rounded-2xl border border-outline-variant/70 bg-surface-container-lowest/80 p-6 shadow-sm">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="font-label-caps text-primary mb-2">archive</p>
+            <h1 className="font-headline-md text-headline-md">./exec list_all_projects</h1>
+            <p className="mt-2 text-on-surface-variant">Search, filter, and browse the full project catalog.</p>
+          </div>
 
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-          <input
-            type="search"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Search projects"
-            className="w-full rounded-full border border-outline-variant bg-surface-container px-4 py-2 text-sm text-on-surface outline-none focus:border-primary sm:w-64"
-          />
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <input
+              type="search"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search projects"
+              className="w-full rounded-full border border-outline-variant bg-surface-container px-4 py-2 text-sm text-on-surface outline-none focus:border-primary sm:w-64"
+            />
 
-          <select
-            value={category}
-            onChange={(event) => setCategory(event.target.value)}
-            className="rounded-full border border-outline-variant bg-surface-container px-4 py-2 text-sm text-on-surface outline-none focus:border-primary"
-          >
-            <option value="All">All categories</option>
-            {categories.map((item) => (
-              <option key={item} value={item}>
-                {item}
-              </option>
-            ))}
-          </select>
+            <select
+              value={category}
+              onChange={(event) => setCategory(event.target.value)}
+              className="rounded-full border border-outline-variant bg-surface-container px-4 py-2 text-sm text-on-surface outline-none focus:border-primary"
+            >
+              <option value="All">All categories</option>
+              {categories.map((item) => (
+                <option key={item} value={item}>
+                  {item}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 

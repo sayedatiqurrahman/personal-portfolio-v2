@@ -77,6 +77,10 @@ export async function createEducation(data: any) {
 }
 
 export async function updateEducation(id: number, data: any) {
+  const existing = await prisma.education.findUnique({ where: { id } });
+  if (!existing) {
+    return prisma.education.create({ data: { id, ...data } });
+  }
   return prisma.education.update({ where: { id }, data });
 }
 

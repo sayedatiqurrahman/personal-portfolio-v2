@@ -22,7 +22,7 @@ export default async function Home() {
     <>
       <div className="terminal-scanlines" />
       <Header profile={profile!} />
-      <main className="pt-24 min-h-screen">
+      <main id="home" className="pt-24 min-h-screen">
         <Hero profile={profile!} roles={roles} terminalInfo={terminalInfo} />
         <Projects projects={projects} />
         <Skills skills={skills} />

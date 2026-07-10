@@ -18,24 +18,31 @@ async function main() {
     data: {
       id: 1,
       name: "Sayed Atiqur Rahman",
-      shortName: "S. Rahman",
+      shortName: "S.A.Rahman",
       headerName: "S.A.RAHMAN",
-      terminalPrompt: "S.RAHMAN@ROOT:~$",
+      terminalPrompt: "S.A.RAHMAN@ROOT:~$",
       terminalUser: "sayed@atiqur",
-      tagline: "Building scalable digital experiences with precision and human-centric design.",
+      tagline:
+        "Building scalable digital experiences with precision and human-centric design.",
       bio: "Specializing in the MERN stack and modern architectural patterns. Building high-performance applications with precision and human-centric design.",
       about: JSON.stringify([
         "I am a software engineer driven by the intersection of robust backend logic and intuitive user experiences. My journey in development is defined by a commitment to clean code and architectural excellence.",
-        "Whether I am optimizing database queries or crafting pixel-perfect interfaces, my goal is always to build systems that scale and empower users."
+        "Whether I am optimizing database queries or crafting pixel-perfect interfaces, my goal is always to build systems that scale and empower users.",
       ]),
-      corePrinciples: JSON.stringify(["Scalability by design", "Type-safe architectures", "Human-centric interfaces"]),
+      corePrinciples: JSON.stringify([
+        "Scalability by design",
+        "Type-safe architectures",
+        "Human-centric interfaces",
+      ]),
       statusLabel: "Available for hire",
-      profileImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuDleRKAL4WWFH_T76F8Lq8sncQbWRauyX8rui9WyLt10cNXEPbtjcpyKuyA9rPKCCXCFuNfvCmrw5JTjrslXAC-PIdDmrkgU-jBTVQvTzPSUda7v6gjLFA2_HI8f0Jd4GtcwpOz1agprxcxRNTBGTbe7wPnZuYN7cML29nfWvbrMtix_JpMHJY2fPVYn-Oam-FhBR4qJbAM877nMUjQAvzmhxNC1EAuPlhXlifAmN-sDrny1rXXQ5A53_1cCWF1iPY-qA",
-      aboutImage: "https://lh3.googleusercontent.com/aida-public/AB6AXuAfKBvrpxH4jqn5mxqcbjTTxLL1Jd6u8qmR5PFFMazDl8sqGRSow4p7TD7fs745OJDqzqqWiCEfi2rDN_halmy6vIgNRohdiOyGedr0owm3BRXgkguXBR4mwLWOvXHbUjki_ijIh5rG94E1c641eQwAFvEyyvSjFEJa0RbvHaN5bBK_s_xu4dN7TcWpu1Y2BTT_T1kuqhEih9JCu6frs4pStJgdWbLH3VRD2tenXFnQY61MsyPRDAbXJJIS-AneJIiB7A",
-      github: "#",
-      linkedin: "#",
-      twitter: "#",
-      email: "sayed@atiqur.dev",
+      profileImage:
+        "https://lh3.googleusercontent.com/aida-public/AB6AXuDleRKAL4WWFH_T76F8Lq8sncQbWRauyX8rui9WyLt10cNXEPbtjcpyKuyA9rPKCCXCFuNfvCmrw5JTjrslXAC-PIdDmrkgU-jBTVQvTzPSUda7v6gjLFA2_HI8f0Jd4GtcwpOz1agprxcxRNTBGTbe7wPnZuYN7cML29nfWvbrMtix_JpMHJY2fPVYn-Oam-FhBR4qJbAM877nMUjQAvzmhxNC1EAuPlhXlifAmN-sDrny1rXXQ5A53_1cCWF1iPY-qA",
+      aboutImage:
+        "https://lh3.googleusercontent.com/aida-public/AB6AXuAfKBvrpxH4jqn5mxqcbjTTxLL1Jd6u8qmR5PFFMazDl8sqGRSow4p7TD7fs745OJDqzqqWiCEfi2rDN_halmy6vIgNRohdiOyGedr0owm3BRXgkguXBR4mwLWOvXHbUjki_ijIh5rG94E1c641eQwAFvEyyvSjFEJa0RbvHaN5bBK_s_xu4dN7TcWpu1Y2BTT_T1kuqhEih9JCu6frs4pStJgdWbLH3VRD2tenXFnQY61MsyPRDAbXJJIS-AneJIiB7A",
+      github: "https://github.com/sayedatiqurrahman/",
+      linkedin: "https://bd.linkedin.com/in/satiqurrahman",
+      twitter: "https://x.com/satiqurrahman35",
+      email: "s.atiqurrahman2003@gmail.com",
       footerText: "© 2024 Sayed Atiqur Rahman. Built with MERN Stack.",
     },
   });
@@ -82,6 +89,15 @@ async function main() {
         terminalScript: "lib/js_mosque/", tags: JSON.stringify(["Role Based Auth", "Stripe SDK"]),
         image: "", liveUrl: "#", sourceUrl: "#", gridSpan: "12", featured: 1, sortOrder: 2,
       },
+      {
+        title: "Programming Light Agency", category: "Agency / Studio",
+        description: "All-in-One Digital Solutions Studio for modern business growth and product launches.",
+        longDescription: "A digital agency platform focused on web products, branding, and growth systems for startups and small businesses.",
+        stack: JSON.stringify(["Next.js", "Prisma", "PostgreSQL"]),
+        terminalType: "Agency Platform", terminalDesc: "Studio website with launch-ready digital experiences.",
+        terminalScript: "./programming-light.sh", tags: JSON.stringify(["Agency", "Next.js"]),
+        image: "", liveUrl: "https://programming-light.vercel.app/", sourceUrl: "#", gridSpan: "8", featured: 1, sortOrder: 3,
+      },
     ],
   });
 
@@ -121,14 +137,22 @@ async function main() {
   // ─── Education ────────────────────────────────────────
   await prisma.education.createMany({
     data: [
-      { institution: "University of Technology", degree: "Bachelor of Science", field: "Computer Science", startDate: "2018", endDate: "2022", description: "Focused on software engineering, algorithms, and distributed systems.", sortOrder: 0 },
+      {
+        institution: "International Islamic University Chittagong",
+        degree: "Bachelor of Arts in Qur'anic Science & Islamic Studies",
+        field: "Islamic Studies",
+        startDate: "2022",
+        endDate: "2027",
+        description: "Focused on Qur'anic studies, Islamic knowledge, and academic research.",
+        sortOrder: 0,
+      },
     ],
   });
 
   // ─── Certificates ─────────────────────────────────────
   await prisma.certificate.createMany({
     data: [
-      { name: "AWS Certified Developer", issuer: "Amazon Web Services", date: "2024", sortOrder: 0 },
+      { name: "Complete Web Development", issuer: "Programming Hero", date: "2022", sortOrder: 0 },
       { name: "Meta Front-End Developer", issuer: "Meta / Coursera", date: "2023", sortOrder: 1 },
     ],
   });

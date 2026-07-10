@@ -100,7 +100,7 @@ export default function Hero({ profile, roles, terminalInfo }: { profile: Profil
                 <div className="w-6 h-6 bg-surface-variant" />
               </div>
               <div className="pt-8">
-                <p className="cursor-blink">Ready for deployment</p>
+                <p className="cursor-blink">{profile.statusLabel || "Ready for deployment"}</p>
               </div>
             </div>
           </div>
