@@ -117,7 +117,8 @@ export default function Hero({ profile, roles, terminalInfo }: { profile: Profil
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
               <Image
                 alt={`Portrait of ${profile.name} - Full Stack Developer`}
-                className="w-full aspect-[0.8] object-cover border-2 border-primary/20 rounded shadow-[0_0_20px_rgba(74,225,118,0.2)] grayscale contrast-125"
+                className="w-full aspect-[0.8] object-cover border-2 border-primary/20 rounded grayscale contrast-125"
+                style={{ boxShadow: '0 0 20px rgba(74,225,118,0.2)' }}
                 src={profile.profileImage}
                 width={400}
                 height={500}
@@ -138,12 +139,19 @@ export default function Hero({ profile, roles, terminalInfo }: { profile: Profil
                   </Fragment>
                 ))}
               </div>
-              <div className="mt-8 flex gap-4 pt-6" aria-hidden="true">
-                <div className="w-6 h-6 bg-primary" />
-                <div className="w-6 h-6 bg-secondary" />
-                <div className="w-6 h-6 bg-tertiary" />
-                <div className="w-6 h-6 bg-error" />
-                <div className="w-6 h-6 bg-surface-variant" />
+              <div className="mt-8 flex gap-3 pt-6 flex-wrap">
+                {profile.github && (
+                  <a href={profile.github} target="_blank" rel="noopener noreferrer" className="text-primary font-code-sm font-bold hover:text-primary-fixed transition-colors">[ github ]</a>
+                )}
+                {profile.linkedin && (
+                  <a href={profile.linkedin} target="_blank" rel="noopener noreferrer" className="text-secondary font-code-sm font-bold hover:text-primary-fixed transition-colors">[ linkedin ]</a>
+                )}
+                {profile.twitter && (
+                  <a href={profile.twitter} target="_blank" rel="noopener noreferrer" className="text-tertiary font-code-sm font-bold hover:text-primary-fixed transition-colors">[ twitter ]</a>
+                )}
+                {profile.email && (
+                  <a href={`mailto:${profile.email}`} className="text-on-surface-variant font-code-sm font-bold hover:text-primary-fixed transition-colors">[ email ]</a>
+                )}
               </div>
               {profile.resumeUrl && (
                 <div className="pt-8">

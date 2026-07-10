@@ -68,7 +68,7 @@ async function main() {
         terminalType: "Cloud storage solution", terminalDesc: "Scalable distributed file system with encrypted buffers.",
         terminalScript: "./baraka-cloud.sh", tags: JSON.stringify(["AWS", "MERN"]),
         image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCJpXzrHSYpzYzRgASGIFOfsSewTs9zw7JoTN4EE4lR5IeGpychTnsQBNqUonZlKPd641tAyCzb31fkN5llqF2IbZ_E1E3eBwQ4IyfXZEMSBbxZtsTrDY-jor2NBG6z4a2hy4z3dEJtV0ESrCHqF_AQb6gqqgFO1sSkSnrcLuGE2RUO6jsV6TIXE9Tx8uSG6-VJxaSUInHhUiHFEHWBMGa4CrYkUIbdoD8TxJu0-GyCdqf0An2x6f3V",
-        liveUrl: "#", sourceUrl: "#", gridSpan: "8", featured: 1, sortOrder: 0,
+        liveUrl: "#", sourceUrl: "#", gridSpan: "8", featured: 1, sortOrder: 0, status: "finished",
       },
       {
         title: "GlobalSpeak", category: "AI Integration",
@@ -78,7 +78,7 @@ async function main() {
         terminalType: "Translation/Comm App", terminalDesc: "Real-time neural machine translation for enterprise chat.",
         terminalScript: "./global-speak.bin", tags: JSON.stringify(["OpenAI", "WebSocket"]),
         image: "https://lh3.googleusercontent.com/aida-public/AB6AXuAxTCDXemZQXBfDuqC15NdoronI6ztAs2w0Ceh-uCnogOjQEmTIaK6CY_KaeFy2lik6VOYIoGkDD3bYWhUvg4VObVKlXTlGk2ITrt3AyYOTVEe7QVBLsYYY8P6rYOQDR8QiywTcdVPronpLDoP2yEz5vnJl3jQyckwVuwe--xJxeJE1ggvSk2q_DhInIbsJRdQZPGVGcKkwUuRyNJJSdfsHGQwuWMM4BWq3N_Zw8Cu3OWEQ5N7025P3",
-        liveUrl: "#", sourceUrl: "#", gridSpan: "4", featured: 0, sortOrder: 1,
+        liveUrl: "#", sourceUrl: "#", gridSpan: "4", featured: 0, sortOrder: 1, status: "ongoing",
       },
       {
         title: "JS_Mosque Dashboard", category: "Community Tool",
@@ -87,7 +87,7 @@ async function main() {
         stack: JSON.stringify(["React", "MongoDB", "Express"]),
         terminalType: "Utility Library", terminalDesc: "Lightweight NPM package for prayer time calculations.",
         terminalScript: "lib/js_mosque/", tags: JSON.stringify(["Role Based Auth", "Stripe SDK"]),
-        image: "", liveUrl: "#", sourceUrl: "#", gridSpan: "12", featured: 1, sortOrder: 2,
+        image: "", liveUrl: "#", sourceUrl: "#", gridSpan: "12", featured: 1, sortOrder: 2, status: "staging",
       },
       {
         title: "Programming Light Agency", category: "Agency / Studio",
@@ -96,7 +96,7 @@ async function main() {
         stack: JSON.stringify(["Next.js", "Prisma", "PostgreSQL"]),
         terminalType: "Agency Platform", terminalDesc: "Studio website with launch-ready digital experiences.",
         terminalScript: "./programming-light.sh", tags: JSON.stringify(["Agency", "Next.js"]),
-        image: "", liveUrl: "https://programming-light.vercel.app/", sourceUrl: "#", gridSpan: "8", featured: 1, sortOrder: 3,
+        image: "", liveUrl: "https://programming-light.vercel.app/", sourceUrl: "#", gridSpan: "8", featured: 1, sortOrder: 3, status: "finished",
       },
     ],
   });

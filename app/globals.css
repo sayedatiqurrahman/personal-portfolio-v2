@@ -8,7 +8,7 @@
   }
 
   *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-primary;
+    @apply outline-2 outline-offset-2 outline-[#4be277];
   }
 }
 

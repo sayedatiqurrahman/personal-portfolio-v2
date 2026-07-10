@@ -5,16 +5,28 @@ import type { Skill } from "@/lib/types";
 
 type ViewMode = "npm" | "normal";
 
-const LEVEL_COLORS: Record<string, string> = {
-  expertise: "text-primary border-primary",
-  comfortable: "text-secondary border-secondary",
-  familiar: "text-tertiary border-tertiary",
+const LEVEL_PERCENT: Record<string, number> = {
+  expertise: 90,
+  comfortable: 75,
+  familiar: 60,
+};
+
+const LEVEL_CARD: Record<string, string> = {
+  expertise: "border-primary/40 bg-primary/[0.04] hover:bg-primary/[0.08] hover:border-primary/60",
+  comfortable: "border-secondary/40 bg-secondary/[0.04] hover:bg-secondary/[0.08] hover:border-secondary/60",
+  familiar: "border-tertiary/40 bg-tertiary/[0.04] hover:bg-tertiary/[0.08] hover:border-tertiary/60",
 };
 
 const LEVEL_BG: Record<string, string> = {
-  expertise: "bg-primary/10",
-  comfortable: "bg-secondary/10",
-  familiar: "bg-tertiary/10",
+  expertise: "bg-primary/20",
+  comfortable: "bg-secondary/20",
+  familiar: "bg-tertiary/20",
+};
+
+const LEVEL_TEXT: Record<string, string> = {
+  expertise: "text-primary",
+  comfortable: "text-secondary",
+  familiar: "text-tertiary",
 };
 
 const LEVEL_BAR: Record<string, string> = {
@@ -100,7 +112,7 @@ export default function Skills({ skills }: { skills: Skill[] }) {
         </div>
       )}
 
-      {/* ─── Normal Mode ──────────────────────────────── */}
+      {/* ─── Normal (List) Mode ────────────────────────── */}
       {view === "normal" && (
         <div>
           <div className="flex gap-2 mb-8 flex-wrap">
@@ -132,26 +144,25 @@ export default function Skills({ skills }: { skills: Skill[] }) {
                     {catSkills.map((skill) => (
                       <div
                         key={skill.id}
-                        className="terminal-border p-4 bg-surface-container-low rounded-lg flex flex-col gap-3"
+                        className={`border rounded-lg p-4 flex flex-col gap-3 transition-all ${LEVEL_CARD[skill.level] || "border-outline-variant bg-surface-container-low"}`}
                       >
                         <div className="flex items-center gap-3">
                           <div className={`w-10 h-10 rounded-full ${LEVEL_BG[skill.level] || "bg-surface-container"} flex items-center justify-center`}>
-                            <span className={`material-symbols-outlined text-xl ${LEVEL_COLORS[skill.level]?.split(" ")[0] || "text-primary"}`}>
+                            <span className={`material-symbols-outlined text-xl ${LEVEL_TEXT[skill.level] || "text-primary"}`}>
                               {skill.icon || "code"}
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
                             <p className="text-on-surface font-bold text-sm truncate">{skill.name}</p>
-                            <span className={`text-xs font-code-sm ${LEVEL_COLORS[skill.level]?.split(" ")[0] || "text-primary"}`}>
+                            <span className={`text-xs font-code-sm ${LEVEL_TEXT[skill.level] || "text-primary"}`}>
                               {skill.level}
                             </span>
                           </div>
-                          <span className="text-on-surface-variant text-xs font-code-sm">{skill.percent}%</span>
                         </div>
                         <div className="w-full bg-surface-variant h-1.5 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full transition-all ${LEVEL_BAR[skill.level] || "bg-primary"}`}
-                            style={{ width: `${skill.percent}%` }}
+                            style={{ width: `${LEVEL_PERCENT[skill.level] || 70}%` }}
                           />
                         </div>
                       </div>

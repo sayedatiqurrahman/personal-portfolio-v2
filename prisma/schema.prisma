@@ -53,6 +53,7 @@ model Project {
   gridSpan        String @default("8")
   featured        Int    @default(0)
   sortOrder       Int    @default(0)
+  status          String @default("finished")
 }
 
 model Skill {

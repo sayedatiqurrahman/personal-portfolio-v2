@@ -15,7 +15,7 @@ interface Profile {
 interface Role { id: number; title: string; sortOrder: number; }
 interface Project { id: number; title: string; category: string; description: string; longDescription: string;
   stack: string; terminalType: string; terminalDesc: string; terminalScript: string;
-  tags: string; image: string; liveUrl: string; sourceUrl: string; gridSpan: string; featured: number; sortOrder: number; }
+  tags: string; image: string; liveUrl: string; sourceUrl: string; gridSpan: string; featured: number; sortOrder: number; status: string; }
 interface Skill { id: number; name: string; icon: string; percent: number; level: string; category: string; sortOrder: number; }
 interface Education { id: number; institution: string; degree: string; field: string;
   startDate: string; endDate: string; description: string; sortOrder: number; }
@@ -411,22 +411,34 @@ export default function AdminPage() {
                       {inp("Title", p.title, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, title: v }; setProjects(n); })}
                       <div>
                         <label className="text-xs text-on-surface-variant mb-1 block">Category</label>
-                        <input
-                          list="project-categories"
-                          className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
-                          value={p.category}
-                          onChange={(e) => {
-                            const n = [...projects];
-                            n[projects.indexOf(p)] = { ...p, category: e.target.value };
-                            setProjects(n);
-                          }}
-                          placeholder="Select or create a category"
-                        />
-                        <datalist id="project-categories">
-                          {categoryOptions.map((category) => (
-                            <option key={category} value={category} />
-                          ))}
-                        </datalist>
+                        <div className="flex gap-2">
+                          <select
+                            className="flex-1 bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
+                            value={categoryOptions.includes(p.category) ? p.category : "other"}
+                            onChange={(e) => {
+                              const n = [...projects];
+                              n[projects.indexOf(p)] = { ...p, category: e.target.value === "other" ? "" : e.target.value };
+                              setProjects(n);
+                            }}
+                          >
+                            {categoryOptions.map((cat) => (
+                              <option key={cat} value={cat}>{cat}</option>
+                            ))}
+                            <option value="other">Other...</option>
+                          </select>
+                          {!categoryOptions.includes(p.category) && (
+                            <input
+                              className="flex-1 bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
+                              value={p.category}
+                              onChange={(e) => {
+                                const n = [...projects];
+                                n[projects.indexOf(p)] = { ...p, category: e.target.value };
+                                setProjects(n);
+                              }}
+                              placeholder="New category"
+                            />
+                          )}
+                        </div>
                       </div>
                     </div>
                     {inp("Description", p.description, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, description: v }; setProjects(n); })}
@@ -440,11 +452,32 @@ export default function AdminPage() {
                       {inp("Source URL", p.sourceUrl, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, sourceUrl: v }; setProjects(n); })}
                     </div>
                     {inp("Image URL", p.image, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, image: v }; setProjects(n); })}
-                    <div className="grid grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs text-on-surface-variant mb-1 block">Status</label>
+                        <select
+                          className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
+                          value={p.status}
+                          onChange={(e) => {
+                            const n = [...projects];
+                            n[projects.indexOf(p)] = { ...p, status: e.target.value };
+                            setProjects(n);
+                          }}
+                        >
+                          <option value="finished">Finished</option>
+                          <option value="ongoing">Ongoing</option>
+                          <option value="staging">Staging</option>
+                          <option value="failed/cancelled">Failed / Cancelled</option>
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        {inp("Grid Span (4/6/8/12)", p.gridSpan, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, gridSpan: v }; setProjects(n); })}
+                        {numInp("Featured (0=no, >0=pos)", p.featured, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, featured: Math.max(0, v) }; setProjects(n); })}
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
                       {inp("Terminal Type", p.terminalType, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, terminalType: v }; setProjects(n); })}
                       {inp("Terminal Script", p.terminalScript, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, terminalScript: v }; setProjects(n); })}
-                      {inp("Grid Span (4/8/12)", p.gridSpan, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, gridSpan: v }; setProjects(n); })}
-                      {numInp("Featured (0=no, 1-3=pos)", p.featured, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, featured: Math.min(3, Math.max(0, v)) }; setProjects(n); })}
                     </div>
                   </div>
                 </details>

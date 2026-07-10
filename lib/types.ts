@@ -44,6 +44,7 @@ export interface Project {
   gridSpan: string;
   featured: number;
   sortOrder: number;
+  status: string;
 }
 
 export interface Skill {

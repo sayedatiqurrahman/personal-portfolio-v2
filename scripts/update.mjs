@@ -99,7 +99,7 @@ async function manageProjects(rl) {
     const category = await ask(rl, "  Category: ");
     const description = await ask(rl, "  Description: ");
     const stack = await ask(rl, "  Stack (comma-separated): ");
-    const gridSpan = await ask(rl, "  Grid span (4, 8, or 12) [8]: ");
+    const gridSpan = await ask(rl, "  Grid span (4, 6, 8, or 12) [8]: ");
 
     projects.push({
       id: title.toLowerCase().replace(/\s+/g, "-"),
