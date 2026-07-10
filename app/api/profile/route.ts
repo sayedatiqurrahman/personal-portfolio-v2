@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getProfile, updateProfile } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   const profile = await getProfile();
   return NextResponse.json(profile);
