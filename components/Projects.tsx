@@ -41,7 +41,7 @@ function ProjectCard({ project }: { project: Project }) {
               />
             </div>
           )}
-          <div className="p-6 flex-1">
+          <div className="p-6 flex-1 flex flex-col">
             <div className="flex justify-between items-center mb-4 border-b border-primary/20 pb-2">
               <span className="text-primary font-headline-md text-headline-md">{project.terminalScript}</span>
               <div className="flex gap-1">
@@ -60,7 +60,7 @@ function ProjectCard({ project }: { project: Project }) {
                 <span key={s} className="px-2 py-1 bg-primary/10 border border-primary/20 rounded text-code-sm text-primary font-code-sm">{s}</span>
               ))}
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-4 mt-auto">
               {project.liveUrl && project.liveUrl !== "#" && (
                 <a className="text-primary hover:underline font-bold" href={project.liveUrl} target="_blank" rel="noopener noreferrer">[ LIVE_DEMO ]</a>
               )}
