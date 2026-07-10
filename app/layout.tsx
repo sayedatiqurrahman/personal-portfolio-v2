@@ -53,12 +53,14 @@ export const metadata: Metadata = {
     description:
       "MERN Stack Developer specializing in TypeScript, React, Next.js, Node.js, and modern web architectures.",
     url: siteUrl,
+    images: [{ url: "/api/og", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
     title: "Sayed Atiqur Rahman | Full Stack Developer",
     description:
       "MERN Stack Developer specializing in TypeScript, React, Next.js, Node.js, and modern web architectures.",
+    images: [{ url: "/api/og", width: 1200, height: 630 }],
   },
   robots: {
     index: true,

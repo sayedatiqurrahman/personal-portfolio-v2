@@ -11,3 +11,4 @@ tsconfig.tsbuildinfo
 
 /lib/generated/prisma
 .vercel
+.env*
