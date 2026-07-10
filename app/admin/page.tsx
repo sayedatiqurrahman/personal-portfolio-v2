@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 
-type Tab = "profile" | "roles" | "projects" | "skills" | "terminal" | "education" | "certificates" | "reviews" | "resume";
+type Tab = "profile" | "roles" | "projects" | "skills" | "terminal" | "education" | "certificates" | "achievements" | "reviews" | "resume";
 
 interface Profile {
   id: number; name: string; shortName: string; headerName: string; terminalPrompt: string;
@@ -20,6 +20,7 @@ interface Skill { id: number; name: string; icon: string; percent: number; level
 interface Education { id: number; institution: string; degree: string; field: string;
   startDate: string; endDate: string; description: string; sortOrder: number; }
 interface Certificate { id: number; name: string; issuer: string; date: string; url: string; image: string; gridSpan: string; sortOrder: number; }
+interface Achievement { id: number; title: string; issuer: string; date: string; description: string; url: string; image: string; sortOrder: number; }
 interface Review { id: number; clientName: string; company: string; rating: number; text: string; date: string; sortOrder: number; }
 interface TermInfo { id: number; key: string; label: string; value: string; sortOrder: number; }
 
@@ -31,6 +32,7 @@ const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: "skills", label: "Skills", icon: "psychology" },
   { key: "education", label: "Education", icon: "school" },
   { key: "certificates", label: "Certificates", icon: "workspace_premium" },
+  { key: "achievements", label: "Achievements", icon: "emoji_events" },
   { key: "reviews", label: "Reviews", icon: "rate_review" },
   { key: "resume", label: "Resume", icon: "description" },
 ];
@@ -56,6 +58,7 @@ export default function AdminPage() {
   const [skills, setSkills] = useState<Skill[]>([]);
   const [education, setEducation] = useState<Education[]>([]);
   const [certificates, setCertificates] = useState<Certificate[]>([]);
+  const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [termInfo, setTermInfo] = useState<TermInfo[]>([]);
 
@@ -67,18 +70,19 @@ export default function AdminPage() {
   const loadAll = useCallback(async () => {
     setLoading(true);
     try {
-      const [p, r, pr, s, e, c, rev, t] = await Promise.all([
+      const [p, r, pr, s, e, c, a, rev, t] = await Promise.all([
         api<Profile>("/profile"),
         api<Role[]>("/roles"),
         api<Project[]>("/projects"),
         api<Skill[]>("/skills"),
         api<Education[]>("/education"),
         api<Certificate[]>("/certificates"),
+        api<Achievement[]>("/achievements"),
         api<Review[]>("/reviews"),
         api<TermInfo[]>("/terminal-info"),
       ]);
       setProfile(p); setRoles(r); setProjects(pr); setSkills(s);
-      setEducation(e); setCertificates(c); setReviews(rev); setTermInfo(t);
+      setEducation(e); setCertificates(c); setAchievements(a); setReviews(rev); setTermInfo(t);
     } catch (e) { console.error("Failed to load data:", e); }
     setLoading(false);
   }, []);
@@ -167,6 +171,20 @@ export default function AdminPage() {
   async function removeCertificate(id: number) {
     await api("/certificates", { method: "DELETE", body: JSON.stringify({ id }) });
     setCertificates(certificates.filter((c) => c.id !== id));
+  }
+
+  async function addAchievement() {
+    const a = await api<Achievement>("/achievements", { method: "POST", body: JSON.stringify({ title: "New Achievement", sortOrder: achievements.length }) });
+    setAchievements([...achievements, a]);
+  }
+  async function saveAchievement(a: Achievement) {
+    await api("/achievements", { method: "PUT", body: JSON.stringify(a) });
+    await loadAll();
+    flash();
+  }
+  async function removeAchievement(id: number) {
+    await api("/achievements", { method: "DELETE", body: JSON.stringify({ id }) });
+    setAchievements(achievements.filter((a) => a.id !== id));
   }
 
   async function addReview() {
@@ -592,6 +610,37 @@ export default function AdminPage() {
                       <option value="12">12</option>
                     </select>
                   </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ─── Achievements ──────────────────────────── */}
+          {tab === "achievements" && (
+            <div className="space-y-4">
+              <SectionHeader title="Achievements & Rewards" onAdd={addAchievement} />
+              {achievements.map((a) => (
+                <div key={a.id} className="bg-surface border border-outline-variant rounded p-4 space-y-3">
+                  <div className="flex justify-between items-center">
+                    <span className="font-bold text-primary">{a.title}</span>
+                    <div className="flex gap-3">
+                      <button onClick={() => saveAchievement(a)} className="text-primary text-xs hover:underline">Save</button>
+                      <button onClick={() => removeAchievement(a.id)} className="text-error text-xs hover:underline">Delete</button>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {inp("Title", a.title, (v) => { const n = [...achievements]; n[achievements.indexOf(a)] = { ...a, title: v }; setAchievements(n); })}
+                    {inp("Issuer", a.issuer, (v) => { const n = [...achievements]; n[achievements.indexOf(a)] = { ...a, issuer: v }; setAchievements(n); })}
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {inp("Date", a.date, (v) => { const n = [...achievements]; n[achievements.indexOf(a)] = { ...a, date: v }; setAchievements(n); })}
+                    {inp("Verify URL", a.url, (v) => { const n = [...achievements]; n[achievements.indexOf(a)] = { ...a, url: v }; setAchievements(n); })}
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {inp("Image URL", a.image, (v) => { const n = [...achievements]; n[achievements.indexOf(a)] = { ...a, image: v }; setAchievements(n); })}
+                    {inp("Sort Order", String(a.sortOrder), (v) => { const n = [...achievements]; n[achievements.indexOf(a)] = { ...a, sortOrder: parseInt(v) || 0 }; setAchievements(n); })}
+                  </div>
+                  {inp("Description", a.description, (v) => { const n = [...achievements]; n[achievements.indexOf(a)] = { ...a, description: v }; setAchievements(n); }, { multiline: true })}
                 </div>
               ))}
             </div>

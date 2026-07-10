@@ -79,6 +79,17 @@ export interface Certificate {
   sortOrder: number;
 }
 
+export interface Achievement {
+  id: number;
+  title: string;
+  issuer: string;
+  date: string;
+  description: string;
+  url: string;
+  image: string;
+  sortOrder: number;
+}
+
 export interface Review {
   id: number;
   clientName: string;

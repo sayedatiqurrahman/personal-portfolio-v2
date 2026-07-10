@@ -88,6 +88,17 @@ model Certificate {
   sortOrder Int    @default(0)
 }
 
+model Achievement {
+  id        Int    @id @default(autoincrement())
+  title     String
+  issuer    String @default("")
+  date      String @default("")
+  description String @default("")
+  url       String @default("")
+  image     String @default("")
+  sortOrder Int    @default(0)
+}
+
 model Review {
   id         Int    @id @default(autoincrement())
   clientName String

@@ -258,3 +258,36 @@ export async function deleteTerminalInfo(id: number) {
     return null;
   }
 }
+
+// ─── Achievements ────────────────────────────────────────
+export async function getAchievements() {
+  try {
+    return await prisma.achievement.findMany({ orderBy: { sortOrder: "asc" } });
+  } catch {
+    return [];
+  }
+}
+
+export async function createAchievement(data: any) {
+  try {
+    return await prisma.achievement.create({ data });
+  } catch {
+    return null;
+  }
+}
+
+export async function updateAchievement(id: number, data: any) {
+  try {
+    return await prisma.achievement.update({ where: { id }, data });
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteAchievement(id: number) {
+  try {
+    return await prisma.achievement.delete({ where: { id } });
+  } catch {
+    return null;
+  }
+}

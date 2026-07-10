@@ -7,9 +7,10 @@ import Education from "@/components/Education";
 import Certificates from "@/components/Certificates";
 import Reviews from "@/components/Reviews";
 import About from "@/components/About";
+import Achievements from "@/components/Achievements";
 import Footer from "@/components/Footer";
 import FAB from "@/components/FAB";
-import { getProfile, getRoles, getProjects, getSkills, getEducation, getCertificates, getReviews, getTerminalInfo } from "@/lib/db";
+import { getProfile, getRoles, getProjects, getSkills, getEducation, getCertificates, getAchievements, getReviews, getTerminalInfo } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 
@@ -38,9 +39,9 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const [profile, roles, projects, skills, education, certificates, reviews, terminalInfo] = await Promise.all([
+  const [profile, roles, projects, skills, education, certificates, achievements, reviews, terminalInfo] = await Promise.all([
     getProfile(), getRoles(), getProjects(), getSkills(),
-    getEducation(), getCertificates(), getReviews(), getTerminalInfo(),
+    getEducation(), getCertificates(), getAchievements(), getReviews(), getTerminalInfo(),
   ]);
 
   const jsonLd = {
@@ -71,12 +72,13 @@ export default async function Home() {
       <Header profile={profile!} />
       <main id="home" className="pt-24 min-h-screen">
         <Hero profile={profile!} roles={roles} terminalInfo={terminalInfo} />
-        <Projects projects={projects} />
+        <About profile={profile!} />
         <Skills skills={skills} />
+        <Projects projects={projects} />
         <Education education={education} />
         <Certificates certificates={certificates} />
+        <Achievements achievements={achievements} />
         <Reviews reviews={reviews} />
-        <About profile={profile!} />
       </main>
       <Footer profile={profile!} />
       <FAB />
