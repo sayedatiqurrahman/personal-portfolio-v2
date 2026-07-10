@@ -17,41 +17,21 @@ export default function About({ profile }: { profile: Profile }) {
             {about.map((p: string, i: number) => (
               <p key={i}>{p}</p>
             ))}
-            <div className="pt-8 border-t border-outline-variant/30">
-              <h4 className="font-label-caps text-secondary mb-4">Core Principles</h4>
-              <ul className="space-y-2 font-code-sm">
-                {principles.map((principle: string) => (
-                  <li key={principle} className="flex items-center gap-2">
-                    <span className="text-primary">&gt;</span> {principle}
-                  </li>
-                ))}
-              </ul>
-            </div>
           </div>
         </div>
 
         <div>
           <h2 className="font-headline-md text-headline-md text-primary mb-8">
-            ./contact --init
+            core_principles.config
           </h2>
-          <form className="space-y-6 bg-surface-container p-8 rounded-xl border border-outline-variant/20">
-            <div className="space-y-2">
-              <label className="font-label-caps text-on-surface-variant" htmlFor="name">Identifier</label>
-              <input className="w-full bg-background border border-outline-variant/30 rounded p-3 focus:border-primary focus:ring-0 outline-none transition-all font-code-sm" id="name" placeholder="Your Name" type="text" />
-            </div>
-            <div className="space-y-2">
-              <label className="font-label-caps text-on-surface-variant" htmlFor="email">Destination</label>
-              <input className="w-full bg-background border border-outline-variant/30 rounded p-3 focus:border-primary focus:ring-0 outline-none transition-all font-code-sm" id="email" placeholder="email@address.com" type="email" />
-            </div>
-            <div className="space-y-2">
-              <label className="font-label-caps text-on-surface-variant" htmlFor="message">Payload</label>
-              <textarea className="w-full bg-background border border-outline-variant/30 rounded p-3 focus:border-primary focus:ring-0 outline-none transition-all font-code-sm h-32" id="message" placeholder="Type your message here..." />
-            </div>
-            <button className="w-full py-4 bg-primary text-on-primary font-bold rounded hover:bg-primary-fixed transition-colors flex items-center justify-center gap-2" type="submit">
-              <span className="material-symbols-outlined">send</span>
-              TRANSMIT DATA
-            </button>
-          </form>
+          <ul className="space-y-4 font-code-sm">
+            {principles.map((principle: string) => (
+              <li key={principle} className="flex items-start gap-3 bg-surface-container p-4 rounded-lg border border-outline-variant/20">
+                <span className="text-primary mt-0.5">&gt;</span>
+                <span className="text-on-surface-variant">{principle}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </section>

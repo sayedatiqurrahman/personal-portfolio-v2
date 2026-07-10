@@ -8,6 +8,7 @@ import Certificates from "@/components/Certificates";
 import Reviews from "@/components/Reviews";
 import About from "@/components/About";
 import Achievements from "@/components/Achievements";
+import Contact from "@/components/Contact";
 import Footer from "@/components/Footer";
 import FAB from "@/components/FAB";
 import { getProfile, getRoles, getProjects, getSkills, getEducation, getCertificates, getAchievements, getReviews, getTerminalInfo } from "@/lib/db";
@@ -79,6 +80,7 @@ export default async function Home() {
         <Certificates certificates={certificates} />
         <Achievements achievements={achievements} />
         <Reviews reviews={reviews} />
+        <Contact />
       </main>
       <Footer profile={profile!} />
       <FAB />
