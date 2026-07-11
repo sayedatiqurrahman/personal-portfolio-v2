@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from "react";
 
-type Tab = "profile" | "roles" | "projects" | "skills" | "terminal" | "education" | "certificates" | "achievements" | "reviews" | "resume";
+type Tab = "profile" | "roles" | "projects" | "skills" | "categories" | "terminal" | "education" | "certificates" | "achievements" | "reviews" | "resume";
 
 interface Profile {
   id: number; name: string; shortName: string; headerName: string; terminalPrompt: string;
@@ -23,6 +23,7 @@ interface Certificate { id: number; name: string; issuer: string; date: string; 
 interface Achievement { id: number; title: string; issuer: string; date: string; description: string; url: string; image: string; sortOrder: number; }
 interface Review { id: number; clientName: string; company: string; rating: number; text: string; date: string; sortOrder: number; }
 interface TermInfo { id: number; key: string; label: string; value: string; sortOrder: number; }
+interface Category { id: number; name: string; type: string; sortOrder: number; }
 
 const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: "profile", label: "Profile", icon: "person" },
@@ -30,6 +31,7 @@ const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: "terminal", label: "Terminal Info", icon: "terminal" },
   { key: "projects", label: "Projects", icon: "folder" },
   { key: "skills", label: "Skills", icon: "psychology" },
+  { key: "categories", label: "Categories", icon: "category" },
   { key: "education", label: "Education", icon: "school" },
   { key: "certificates", label: "Certificates", icon: "workspace_premium" },
   { key: "achievements", label: "Achievements", icon: "emoji_events" },
@@ -63,6 +65,7 @@ export default function AdminPage() {
   const [achievements, setAchievements] = useState<Achievement[]>([]);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [termInfo, setTermInfo] = useState<TermInfo[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
 
   const [projectSearch, setProjectSearch] = useState("");
   const [projectCategory, setProjectCategory] = useState("All");
@@ -72,7 +75,7 @@ export default function AdminPage() {
   const loadAll = useCallback(async () => {
     setLoading(true);
     const settle = <T,>(p: Promise<T>, fallback: T) => p.catch(() => fallback);
-    const [p, r, pr, s, e, c, a, rev, t] = await Promise.all([
+    const [p, r, pr, s, e, c, a, rev, t, cat] = await Promise.all([
       settle(api<Profile>("/profile"), null),
       settle(api<Role[]>("/roles"), []),
       settle(api<Project[]>("/projects"), []),
@@ -82,9 +85,10 @@ export default function AdminPage() {
       settle(api<Achievement[]>("/achievements"), []),
       settle(api<Review[]>("/reviews"), []),
       settle(api<TermInfo[]>("/terminal-info"), []),
+      settle(api<Category[]>("/categories"), []),
     ]);
     setProfile(p); setRoles(r); setProjects(pr); setSkills(s);
-    setEducation(e); setCertificates(c); setAchievements(a); setReviews(rev); setTermInfo(t);
+    setEducation(e); setCertificates(c); setAchievements(a); setReviews(rev); setTermInfo(t); setCategories(cat);
     setLoading(false);
   }, []);
 
@@ -148,7 +152,8 @@ export default function AdminPage() {
 
   async function addSkill() {
     try {
-      await api<Skill>("/skills", { method: "POST", body: JSON.stringify({ name: "New Skill", icon: "code", percent: 70, level: "expertise", category: "Backend", sortOrder: skills.length }) });
+      const firstCat = categories.filter(c => c.type === "skill")[0]?.name || "";
+      await api<Skill>("/skills", { method: "POST", body: JSON.stringify({ name: "New Skill", icon: "code", percent: 70, level: "expertise", category: firstCat, sortOrder: skills.length }) });
       setSkills(await api<Skill[]>("/skills"));
     } catch (e) { alert("Failed to add skill: " + e); }
   }
@@ -266,7 +271,29 @@ export default function AdminPage() {
     } catch (e) { alert("Failed to delete terminal info: " + e); }
   }
 
+  async function addCategory(type: string) {
+    try {
+      await api<Category>("/categories", { method: "POST", body: JSON.stringify({ name: "New Category", type, sortOrder: categories.length }) });
+      setCategories(await api<Category[]>("/categories"));
+    } catch (e) { alert("Failed to add category: " + e); }
+  }
+  async function saveCategory(cat: Category) {
+    try {
+      await api("/categories", { method: "PUT", body: JSON.stringify(cat) });
+      setCategories(await api<Category[]>("/categories"));
+      flash();
+    } catch (e) { alert("Failed to save category: " + e); }
+  }
+  async function removeCategory(id: number) {
+    try {
+      await api("/categories", { method: "DELETE", body: JSON.stringify({ id }) });
+      setCategories(await api<Category[]>("/categories"));
+    } catch (e) { alert("Failed to delete category: " + e); }
+  }
+
   const categoryOptions = Array.from(new Set(projects.map((p) => p.category).filter(Boolean))).sort();
+  const projectCategoryNames = categories.filter(c => c.type === "project").map(c => c.name);
+  const allProjectCategories = Array.from(new Set([...projectCategoryNames, ...categoryOptions])).sort();
 
   const filteredProjects = useMemo(() => {
     let result = projects;
@@ -454,7 +481,7 @@ export default function AdminPage() {
                 <select value={projectCategory} onChange={(e) => { setProjectCategory(e.target.value); setProjectPage(1); }}
                   className="bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none">
                   <option value="All">All Categories</option>
-                  {categoryOptions.map(c => <option key={c} value={c}>{c}</option>)}
+                  {allProjectCategories.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
 
@@ -483,19 +510,19 @@ export default function AdminPage() {
                         <div className="flex gap-2">
                           <select
                             className="flex-1 bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
-                            value={categoryOptions.includes(p.category) ? p.category : "other"}
+                            value={allProjectCategories.includes(p.category) ? p.category : "other"}
                             onChange={(e) => {
                               const n = [...projects];
                               n[projects.indexOf(p)] = { ...p, category: e.target.value === "other" ? "" : e.target.value };
                               setProjects(n);
                             }}
                           >
-                            {categoryOptions.map((cat) => (
+                            {allProjectCategories.map((cat) => (
                               <option key={cat} value={cat}>{cat}</option>
                             ))}
                             <option value="other">Other...</option>
                           </select>
-                          {!categoryOptions.includes(p.category) && (
+                          {!allProjectCategories.includes(p.category) && (
                             <input
                               className="flex-1 bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
                               value={p.category}
@@ -570,22 +597,111 @@ export default function AdminPage() {
           {/* ─── Skills ───────────────────────────────── */}
           {tab === "skills" && (
             <div className="space-y-4">
-              <SectionHeader title="Skills" onAdd={addSkill} />
-              {skills.map((s) => (
-                <div key={s.id} className="bg-surface border border-outline-variant rounded p-4 space-y-3">
-                  <div className="grid grid-cols-[1fr_1fr_100px_120px_120px] gap-3 items-end">
-                    <div>{inp("Name", s.name, (v) => { const n = [...skills]; n[skills.indexOf(s)] = { ...s, name: v }; setSkills(n); })}</div>
-                    <div>{inp("Icon (Material)", s.icon, (v) => { const n = [...skills]; n[skills.indexOf(s)] = { ...s, icon: v }; setSkills(n); })}</div>
-                    <div>{numInp("Percent", s.percent, (v) => { const n = [...skills]; n[skills.indexOf(s)] = { ...s, percent: v }; setSkills(n); })}</div>
-                    <div>{inp("Level", s.level, (v) => { const n = [...skills]; n[skills.indexOf(s)] = { ...s, level: v }; setSkills(n); })}</div>
-                    <div>{inp("Category", s.category, (v) => { const n = [...skills]; n[skills.indexOf(s)] = { ...s, category: v }; setSkills(n); })}</div>
+              <SectionHeader title="Skills" onAdd={() => addSkill()} />
+              <p className="text-on-surface-variant text-sm mb-4">Category and percentage are managed automatically. Percentage is set based on level.</p>
+              {skills.map((s) => {
+                const skillCategories = categories.filter(c => c.type === "skill");
+                return (
+                  <div key={s.id} className="bg-surface border border-outline-variant rounded p-4 space-y-3">
+                    <div className="grid grid-cols-[1fr_1fr_140px_140px] gap-3 items-end">
+                      <div>{inp("Name", s.name, (v) => { const n = [...skills]; n[skills.indexOf(s)] = { ...s, name: v }; setSkills(n); })}</div>
+                      <div>{inp("Icon (Material)", s.icon, (v) => { const n = [...skills]; n[skills.indexOf(s)] = { ...s, icon: v }; setSkills(n); })}</div>
+                      <div>
+                        <label className="text-xs text-on-surface-variant mb-1 block">Level</label>
+                        <select
+                          className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
+                          value={s.level}
+                          onChange={(e) => {
+                            const lvl = e.target.value;
+                            const pctMap: Record<string, number> = { expertise: 95, advanced: 85, intermediate: 70, beginner: 50, familiar: 35 };
+                            const n = [...skills]; n[skills.indexOf(s)] = { ...s, level: lvl, percent: pctMap[lvl] ?? 70 }; setSkills(n);
+                          }}
+                        >
+                          <option value="expertise">Expertise (95%)</option>
+                          <option value="advanced">Advanced (85%)</option>
+                          <option value="intermediate">Intermediate (70%)</option>
+                          <option value="beginner">Beginner (50%)</option>
+                          <option value="familiar">Familiar (35%)</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-xs text-on-surface-variant mb-1 block">Category</label>
+                        <select
+                          className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
+                          value={skillCategories.some(c => c.name === s.category) ? s.category : "other"}
+                          onChange={(e) => {
+                            const n = [...skills]; n[skills.indexOf(s)] = { ...s, category: e.target.value === "other" ? "" : e.target.value }; setSkills(n);
+                          }}
+                        >
+                          {skillCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                          <option value="other">Other...</option>
+                        </select>
+                        {!skillCategories.some(c => c.name === s.category) && (
+                          <input className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none mt-2"
+                            value={s.category} onChange={(e) => { const n = [...skills]; n[skills.indexOf(s)] = { ...s, category: e.target.value }; setSkills(n); }}
+                            placeholder="Custom category" />
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex justify-end gap-2">
+                      <button onClick={() => saveSkill(s)} className="text-primary text-xs hover:underline">Save</button>
+                      <button onClick={() => removeSkill(s.id)} className="text-error text-xs hover:underline">Delete</button>
+                    </div>
                   </div>
-                  <div className="flex justify-end gap-2">
-                    <button onClick={() => saveSkill(s)} className="text-primary text-xs hover:underline">Save</button>
-                    <button onClick={() => removeSkill(s.id)} className="text-error text-xs hover:underline">Delete</button>
-                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* ─── Categories ──────────────────────────── */}
+          {tab === "categories" && (
+            <div className="space-y-6">
+              <h2 className="text-lg font-bold text-primary">Category Management</h2>
+              <p className="text-on-surface-variant text-sm">Manage categories for Skills and Projects. These appear as dropdown options in their respective sections.</p>
+
+              {/* Skill Categories */}
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-md font-bold text-on-surface">Skill Categories</h3>
+                  <button onClick={() => addCategory("skill")} className="px-4 py-2 bg-primary text-on-primary rounded text-sm font-bold">+ Add Skill Category</button>
                 </div>
-              ))}
+                {categories.filter(c => c.type === "skill").map((cat) => (
+                  <div key={cat.id} className="bg-surface border border-outline-variant rounded p-4 flex gap-4 items-end mb-2">
+                    <div className="flex-1">{inp("Category Name", cat.name, (v) => { const n = [...categories]; n[categories.indexOf(cat)] = { ...cat, name: v }; setCategories(n); })}</div>
+                    <div className="w-20">{numInp("Order", cat.sortOrder, (v) => { const n = [...categories]; n[categories.indexOf(cat)] = { ...cat, sortOrder: v }; setCategories(n); })}</div>
+                    <div className="flex gap-2 pb-1">
+                      <button onClick={() => saveCategory(cat)} className="text-primary text-xs hover:underline">Save</button>
+                      <button onClick={() => removeCategory(cat.id)} className="text-error text-xs hover:underline">Del</button>
+                    </div>
+                  </div>
+                ))}
+                {categories.filter(c => c.type === "skill").length === 0 && (
+                  <p className="text-on-surface-variant text-sm italic">No skill categories yet. Add one to get started.</p>
+                )}
+              </div>
+
+              <hr className="border-outline-variant" />
+
+              {/* Project Categories */}
+              <div>
+                <div className="flex justify-between items-center mb-4">
+                  <h3 className="text-md font-bold text-on-surface">Project Categories</h3>
+                  <button onClick={() => addCategory("project")} className="px-4 py-2 bg-primary text-on-primary rounded text-sm font-bold">+ Add Project Category</button>
+                </div>
+                {categories.filter(c => c.type === "project").map((cat) => (
+                  <div key={cat.id} className="bg-surface border border-outline-variant rounded p-4 flex gap-4 items-end mb-2">
+                    <div className="flex-1">{inp("Category Name", cat.name, (v) => { const n = [...categories]; n[categories.indexOf(cat)] = { ...cat, name: v }; setCategories(n); })}</div>
+                    <div className="w-20">{numInp("Order", cat.sortOrder, (v) => { const n = [...categories]; n[categories.indexOf(cat)] = { ...cat, sortOrder: v }; setCategories(n); })}</div>
+                    <div className="flex gap-2 pb-1">
+                      <button onClick={() => saveCategory(cat)} className="text-primary text-xs hover:underline">Save</button>
+                      <button onClick={() => removeCategory(cat.id)} className="text-error text-xs hover:underline">Del</button>
+                    </div>
+                  </div>
+                ))}
+                {categories.filter(c => c.type === "project").length === 0 && (
+                  <p className="text-on-surface-variant text-sm italic">No project categories yet. Add one to get started.</p>
+                )}
+              </div>
             </div>
           )}
 

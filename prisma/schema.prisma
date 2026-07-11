@@ -109,6 +109,13 @@ model Skill {
   sortOrder Int    @default(0)
 }
 
+model Category {
+  id        Int    @id @default(autoincrement())
+  name      String
+  type      String @default("skill") // "skill" | "project"
+  sortOrder Int    @default(0)
+}
+
 model TerminalInfo {
   id        Int    @id @default(autoincrement())
   key       String

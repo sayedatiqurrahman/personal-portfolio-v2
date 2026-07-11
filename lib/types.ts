@@ -100,6 +100,13 @@ export interface Review {
   sortOrder: number;
 }
 
+export interface Category {
+  id: number;
+  name: string;
+  type: string;
+  sortOrder: number;
+}
+
 export interface TerminalInfo {
   id: number;
   key: string;

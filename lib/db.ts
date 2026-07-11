@@ -250,6 +250,40 @@ export async function deleteReview(id: number) {
   }
 }
 
+// ─── Categories ──────────────────────────────────────
+export async function getCategories(type?: string) {
+  try {
+    const where = type ? { type } : {};
+    return await prisma.category.findMany({ where, orderBy: { sortOrder: "asc" } });
+  } catch {
+    return [];
+  }
+}
+
+export async function createCategory(data: { name: string; type?: string; sortOrder?: number }) {
+  try {
+    return await prisma.category.create({ data: { name: data.name, type: data.type ?? "skill", sortOrder: data.sortOrder ?? 0 } });
+  } catch {
+    return null;
+  }
+}
+
+export async function updateCategory(id: number, data: { name?: string; type?: string; sortOrder?: number }) {
+  try {
+    return await prisma.category.update({ where: { id }, data });
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteCategory(id: number) {
+  try {
+    return await prisma.category.delete({ where: { id } });
+  } catch {
+    return null;
+  }
+}
+
 // ─── Terminal Info ──────────────────────────────────────
 export async function getTerminalInfo() {
   try {
