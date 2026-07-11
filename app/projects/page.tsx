@@ -5,7 +5,7 @@ import Footer from "@/components/Footer";
 import FAB from "@/components/FAB";
 import { getProfile, getProjects } from "@/lib/db";
 
-export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const [profile, projects] = await Promise.all([
