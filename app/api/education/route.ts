@@ -17,6 +17,7 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const item = await createEducation(body);
   revalidatePath("/");
+  revalidatePath("/terminal");
   return NextResponse.json(item);
 }
 
@@ -24,6 +25,7 @@ export async function PUT(req: NextRequest) {
   const { id, ...data } = await req.json();
   await updateEducation(id, data);
   revalidatePath("/");
+  revalidatePath("/terminal");
   return NextResponse.json({ ok: true });
 }
 
@@ -31,5 +33,6 @@ export async function DELETE(req: NextRequest) {
   const { id } = await req.json();
   await deleteEducation(id);
   revalidatePath("/");
+  revalidatePath("/terminal");
   return NextResponse.json({ ok: true });
 }

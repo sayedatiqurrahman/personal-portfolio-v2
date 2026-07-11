@@ -116,7 +116,7 @@ export default function AdminPage() {
   async function saveRole(r: Role) {
     try {
       await api("/roles", { method: "PUT", body: JSON.stringify(r) });
-      await loadAll();
+      setRoles(roles.map((x) => x.id === r.id ? { ...r } : x));
       flash();
     } catch (e) { alert("Failed to save role: " + e); }
   }
@@ -136,7 +136,7 @@ export default function AdminPage() {
   async function saveProject(p: Project) {
     try {
       await api("/projects", { method: "PUT", body: JSON.stringify(p) });
-      await loadAll();
+      setProjects(projects.map((x) => x.id === p.id ? { ...p } : x));
       flash();
     } catch (e) { alert("Failed to save project: " + e); }
   }
@@ -156,7 +156,7 @@ export default function AdminPage() {
   async function saveSkill(s: Skill) {
     try {
       await api("/skills", { method: "PUT", body: JSON.stringify(s) });
-      await loadAll();
+      setSkills(skills.map((x) => x.id === s.id ? { ...s } : x));
       flash();
     } catch (e) { alert("Failed to save skill: " + e); }
   }
@@ -176,7 +176,7 @@ export default function AdminPage() {
   async function saveEducation(e: Education) {
     try {
       await api("/education", { method: "PUT", body: JSON.stringify(e) });
-      await loadAll();
+      setEducation(education.map((x) => x.id === e.id ? { ...e } : x));
       flash();
     } catch (e) { alert("Failed to save education: " + e); }
   }
@@ -196,7 +196,7 @@ export default function AdminPage() {
   async function saveCertificate(c: Certificate) {
     try {
       await api("/certificates", { method: "PUT", body: JSON.stringify(c) });
-      await loadAll();
+      setCertificates(certificates.map((x) => x.id === c.id ? { ...c } : x));
       flash();
     } catch (e) { alert("Failed to save certificate: " + e); }
   }
@@ -216,7 +216,7 @@ export default function AdminPage() {
   async function saveAchievement(a: Achievement) {
     try {
       await api("/achievements", { method: "PUT", body: JSON.stringify(a) });
-      await loadAll();
+      setAchievements(achievements.map((x) => x.id === a.id ? { ...a } : x));
       flash();
     } catch (e) { alert("Failed to save achievement: " + e); }
   }
@@ -236,7 +236,7 @@ export default function AdminPage() {
   async function saveReview(r: Review) {
     try {
       await api("/reviews", { method: "PUT", body: JSON.stringify(r) });
-      await loadAll();
+      setReviews(reviews.map((x) => x.id === r.id ? { ...r } : x));
       flash();
     } catch (e) { alert("Failed to save review: " + e); }
   }
@@ -256,7 +256,7 @@ export default function AdminPage() {
   async function saveTermInfo(t: TermInfo) {
     try {
       await api("/terminal-info", { method: "PUT", body: JSON.stringify(t) });
-      await loadAll();
+      setTermInfo(termInfo.map((x) => x.id === t.id ? { ...t } : x));
       flash();
     } catch (e) { alert("Failed to save terminal info: " + e); }
   }

@@ -15,17 +15,8 @@ import { getProfile, getRoles, getProjects, getSkills, getEducation, getCertific
 
 export const revalidate = 60;
 
-async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
-  try {
-    return await fn();
-  } catch {
-    return fallback;
-  }
-}
-
 export async function generateMetadata(): Promise<Metadata> {
-  const profile = await safe(getProfile, null);
-  if (!profile) return {};
+  const profile = await getProfile();
 
   const description = profile.tagline || profile.bio || `${profile.name} - Full Stack Developer`;
 
@@ -48,30 +39,32 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function Home() {
-  const profile = await safe(getProfile, null);
-  const roles = await safe(getRoles, []);
-  const projects = await safe(getProjects, []);
-  const skills = await safe(getSkills, []);
-  const education = await safe(getEducation, []);
-  const certificates = await safe(getCertificates, []);
-  const achievements = await safe(getAchievements, []);
-  const reviews = await safe(getReviews, []);
-  const terminalInfo = await safe(getTerminalInfo, []);
+  const [profile, roles, projects, skills, education, certificates, achievements, reviews, terminalInfo] = await Promise.all([
+    getProfile(),
+    getRoles(),
+    getProjects(),
+    getSkills(),
+    getEducation(),
+    getCertificates(),
+    getAchievements(),
+    getReviews(),
+    getTerminalInfo(),
+  ]);
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Person",
-    name: profile?.name,
-    alternateName: profile?.shortName,
-    description: profile?.tagline || profile?.bio,
+    name: profile.name,
+    alternateName: profile.shortName,
+    description: profile.tagline || profile.bio,
     image: "https://images.pexels.com/photos/38512418/pexels-photo-38512418.jpeg?w=800",
     url: "https://atiq.is-a.dev",
     sameAs: [
-      profile?.github,
-      profile?.linkedin,
-      profile?.twitter,
+      profile.github,
+      profile.linkedin,
+      profile.twitter,
     ].filter(Boolean),
-    email: profile?.email,
+    email: profile.email,
     jobTitle: "Full Stack Developer",
     knowsAbout: ["MERN Stack", "TypeScript", "React", "Next.js", "Node.js", "Web Development"],
   };
@@ -83,19 +76,19 @@ export default async function Home() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="terminal-scanlines" />
-      <Header profile={profile!} />
+      <Header profile={profile} />
       <main id="home" className="pt-24 min-h-screen">
-        <Hero profile={profile!} roles={roles} terminalInfo={terminalInfo} />
-        <About profile={profile!} />
+        <Hero profile={profile} roles={roles} terminalInfo={terminalInfo} />
+        <About profile={profile} />
         <Skills skills={skills} />
         <Projects projects={projects} />
         <Education education={education} />
         <Certificates certificates={certificates} />
         <Achievements achievements={achievements} />
         <Reviews reviews={reviews} />
-        <Contact email={profile?.email} />
+        <Contact email={profile.email} />
       </main>
-      <Footer profile={profile!} />
+      <Footer profile={profile} />
       <FAB />
     </>
   );

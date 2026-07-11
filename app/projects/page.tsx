@@ -7,21 +7,15 @@ import { getProfile, getProjects } from "@/lib/db";
 
 export const revalidate = 60;
 
-async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
-  try {
-    return await fn();
-  } catch {
-    return fallback;
-  }
-}
-
 export async function generateMetadata(): Promise<Metadata> {
-  const profile = await safe(getProfile, null);
-  const projects = await safe(getProjects, []);
+  const [profile, projects] = await Promise.all([
+    getProfile(),
+    getProjects(),
+  ]);
 
   return {
     title: "Projects",
-    description: `Browse all ${projects.length} projects by ${profile?.name || "the developer"}. Full-stack applications built with modern technologies.`,
+    description: `Browse all ${projects.length} projects by ${profile.name || "the developer"}. Full-stack applications built with modern technologies.`,
     openGraph: {
       title: "Projects | Full Stack Portfolio",
       description: `Browse all ${projects.length} projects. Full-stack applications built with modern technologies.`,
@@ -30,18 +24,20 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProjectsPage() {
-  const profile = await safe(getProfile, null);
-  const projects = await safe(getProjects, []);
+  const [profile, projects] = await Promise.all([
+    getProfile(),
+    getProjects(),
+  ]);
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: `Projects by ${profile?.name || "Developer"}`,
+    name: `Projects by ${profile.name || "Developer"}`,
     description: `A collection of ${projects.length} software development projects.`,
     url: "/projects",
     author: {
       "@type": "Person",
-      name: profile?.name,
+      name: profile.name,
     },
   };
 
@@ -52,11 +48,11 @@ export default async function ProjectsPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <div className="terminal-scanlines" />
-      <Header profile={profile!} />
+      <Header profile={profile} />
       <main className="pt-24 min-h-screen">
         <ProjectsArchive projects={projects} />
       </main>
-      <Footer profile={profile!} />
+      <Footer profile={profile} />
       <FAB />
     </>
   );
