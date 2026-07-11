@@ -507,34 +507,20 @@ export default function AdminPage() {
                       {inp("Title", p.title, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, title: v }; setProjects(n); })}
                       <div>
                         <label className="text-xs text-on-surface-variant mb-1 block">Category</label>
-                        <div className="flex gap-2">
-                          <select
-                            className="flex-1 bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
-                            value={allProjectCategories.includes(p.category) ? p.category : "other"}
-                            onChange={(e) => {
-                              const n = [...projects];
-                              n[projects.indexOf(p)] = { ...p, category: e.target.value === "other" ? "" : e.target.value };
-                              setProjects(n);
-                            }}
-                          >
-                            {allProjectCategories.map((cat) => (
-                              <option key={cat} value={cat}>{cat}</option>
-                            ))}
-                            <option value="other">Other...</option>
-                          </select>
-                          {!allProjectCategories.includes(p.category) && (
-                            <input
-                              className="flex-1 bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
-                              value={p.category}
-                              onChange={(e) => {
-                                const n = [...projects];
-                                n[projects.indexOf(p)] = { ...p, category: e.target.value };
-                                setProjects(n);
-                              }}
-                              placeholder="New category"
-                            />
-                          )}
-                        </div>
+                        <select
+                          className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
+                          value={allProjectCategories.includes(p.category) ? p.category : ""}
+                          onChange={(e) => {
+                            const n = [...projects];
+                            n[projects.indexOf(p)] = { ...p, category: e.target.value };
+                            setProjects(n);
+                          }}
+                        >
+                          <option value="">Select Category</option>
+                          {allProjectCategories.map((cat) => (
+                            <option key={cat} value={cat}>{cat}</option>
+                          ))}
+                        </select>
                       </div>
                     </div>
                     {inp("Description", p.description, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, description: v }; setProjects(n); })}
@@ -613,34 +599,28 @@ export default function AdminPage() {
                           value={s.level}
                           onChange={(e) => {
                             const lvl = e.target.value;
-                            const pctMap: Record<string, number> = { expertise: 95, advanced: 85, intermediate: 70, beginner: 50, familiar: 35 };
+                            const pctMap: Record<string, number> = { expertise: 95, comfortable: 75, familiar: 55, learning: 35 };
                             const n = [...skills]; n[skills.indexOf(s)] = { ...s, level: lvl, percent: pctMap[lvl] ?? 70 }; setSkills(n);
                           }}
                         >
                           <option value="expertise">Expertise (95%)</option>
-                          <option value="advanced">Advanced (85%)</option>
-                          <option value="intermediate">Intermediate (70%)</option>
-                          <option value="beginner">Beginner (50%)</option>
-                          <option value="familiar">Familiar (35%)</option>
+                          <option value="comfortable">Comfortable (75%)</option>
+                          <option value="familiar">Familiar (55%)</option>
+                          <option value="learning">Learning (35%)</option>
                         </select>
                       </div>
                       <div>
                         <label className="text-xs text-on-surface-variant mb-1 block">Category</label>
                         <select
                           className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
-                          value={skillCategories.some(c => c.name === s.category) ? s.category : "other"}
+                          value={skillCategories.some(c => c.name === s.category) ? s.category : ""}
                           onChange={(e) => {
-                            const n = [...skills]; n[skills.indexOf(s)] = { ...s, category: e.target.value === "other" ? "" : e.target.value }; setSkills(n);
+                            const n = [...skills]; n[skills.indexOf(s)] = { ...s, category: e.target.value }; setSkills(n);
                           }}
                         >
+                          <option value="">Select Category</option>
                           {skillCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                          <option value="other">Other...</option>
                         </select>
-                        {!skillCategories.some(c => c.name === s.category) && (
-                          <input className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none mt-2"
-                            value={s.category} onChange={(e) => { const n = [...skills]; n[skills.indexOf(s)] = { ...s, category: e.target.value }; setSkills(n); }}
-                            placeholder="Custom category" />
-                        )}
                       </div>
                     </div>
                     <div className="flex justify-end gap-2">
@@ -658,6 +638,10 @@ export default function AdminPage() {
             <div className="space-y-6">
               <h2 className="text-lg font-bold text-primary">Category Management</h2>
               <p className="text-on-surface-variant text-sm">Manage categories for Skills and Projects. These appear as dropdown options in their respective sections.</p>
+              {categories.length === 0 && (
+                <button onClick={async () => { await api("/categories/seed", { method: "POST" }); setCategories(await api<Category[]>("/categories")); }}
+                  className="px-4 py-2 bg-secondary text-on-secondary rounded text-sm font-bold">Load Default Categories</button>
+              )}
 
               {/* Skill Categories */}
               <div>
