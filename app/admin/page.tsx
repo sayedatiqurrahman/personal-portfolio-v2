@@ -84,7 +84,16 @@ export default function AdminPage() {
   const [projectModalTitle, setProjectModalTitle] = useState("");
   const [projectModalCategory, setProjectModalCategory] = useState("");
   const [projectModalDesc, setProjectModalDesc] = useState("");
+  const [projectModalLongDesc, setProjectModalLongDesc] = useState("");
+  const [projectModalTags, setProjectModalTags] = useState("");
+  const [projectModalImage, setProjectModalImage] = useState("");
+  const [projectModalLiveUrl, setProjectModalLiveUrl] = useState("");
+  const [projectModalSourceUrl, setProjectModalSourceUrl] = useState("");
+  const [projectModalGridSpan, setProjectModalGridSpan] = useState("6");
+  const [projectModalFeatured, setProjectModalFeatured] = useState(0);
   const [projectModalStatus, setProjectModalStatus] = useState("ongoing");
+  const [projectModalTermType, setProjectModalTermType] = useState("");
+  const [projectModalTermScript, setProjectModalTermScript] = useState("");
 
   const [stackPickerOpen, setStackPickerOpen] = useState<number | null>(null);
   const [stackSearch, setStackSearch] = useState("");
@@ -172,12 +181,27 @@ export default function AdminPage() {
     setProjectModalTitle("");
     setProjectModalCategory(categories.filter(c => c.type === "project")[0]?.name || "");
     setProjectModalDesc("");
+    setProjectModalLongDesc("");
+    setProjectModalTags("");
+    setProjectModalImage("");
+    setProjectModalLiveUrl("");
+    setProjectModalSourceUrl("");
+    setProjectModalGridSpan("6");
+    setProjectModalFeatured(0);
     setProjectModalStatus("ongoing");
+    setProjectModalTermType("");
+    setProjectModalTermScript("");
     setProjectModal(true);
   }
   async function submitProjectModal() {
     try {
-      await api<Project>("/projects", { method: "POST", body: JSON.stringify({ title: projectModalTitle, category: projectModalCategory, description: projectModalDesc, status: projectModalStatus, sortOrder: projects.length }) });
+      await api<Project>("/projects", { method: "POST", body: JSON.stringify({
+        title: projectModalTitle, category: projectModalCategory, description: projectModalDesc,
+        longDescription: projectModalLongDesc, tags: projectModalTags, image: projectModalImage,
+        liveUrl: projectModalLiveUrl, sourceUrl: projectModalSourceUrl, gridSpan: projectModalGridSpan,
+        featured: projectModalFeatured, status: projectModalStatus, terminalType: projectModalTermType,
+        terminalScript: projectModalTermScript, stack: "[]", sortOrder: projects.length
+      }) });
       setProjects(await api<Project[]>("/projects"));
       setProjectModal(false);
     } catch (e) { alert("Failed to add project: " + e); }
@@ -1073,7 +1097,7 @@ export default function AdminPage() {
         {/* ─── Project Modal ────────────────────────────── */}
         {projectModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setProjectModal(false)}>
-            <div className="bg-surface border border-outline-variant rounded-lg p-6 w-full max-w-md shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <div className="bg-surface border border-outline-variant rounded-lg p-6 w-full max-w-lg shadow-xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
               <h3 className="text-lg font-bold text-primary mb-4">Add New Project</h3>
               <div className="space-y-3">
                 {inp("Title", projectModalTitle, setProjectModalTitle, { placeholder: "e.g. My Portfolio" })}
@@ -1085,6 +1109,28 @@ export default function AdminPage() {
                   </select>
                 </div>
                 {inp("Description", projectModalDesc, setProjectModalDesc, { placeholder: "Short description" })}
+                {inp("Long Description", projectModalLongDesc, setProjectModalLongDesc, { multiline: true, placeholder: "Detailed description..." })}
+                {inp("Tags (comma-sep)", projectModalTags, setProjectModalTags, { placeholder: "e.g. react, nodejs, tailwind" })}
+                {inp("Image URL", projectModalImage, setProjectModalImage, { placeholder: "https://..." })}
+                <div className="grid grid-cols-2 gap-3">
+                  {inp("Live URL", projectModalLiveUrl, setProjectModalLiveUrl, { placeholder: "https://..." })}
+                  {inp("Source URL", projectModalSourceUrl, setProjectModalSourceUrl, { placeholder: "https://..." })}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-on-surface-variant mb-1 block">Grid Span</label>
+                    <select className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none" value={projectModalGridSpan} onChange={(e) => setProjectModalGridSpan(e.target.value)}>
+                      <option value="4">4 (small)</option>
+                      <option value="6">6 (medium)</option>
+                      <option value="8">8 (large)</option>
+                      <option value="12">12 (full)</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs text-on-surface-variant mb-1 block">Featured (0=no)</label>
+                    <input type="number" min="0" className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none" value={projectModalFeatured} onChange={(e) => setProjectModalFeatured(Math.max(0, parseInt(e.target.value) || 0))} />
+                  </div>
+                </div>
                 <div>
                   <label className="text-xs text-on-surface-variant mb-1 block">Status</label>
                   <select className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none" value={projectModalStatus} onChange={(e) => setProjectModalStatus(e.target.value)}>
@@ -1093,6 +1139,10 @@ export default function AdminPage() {
                     <option value="staging">Staging</option>
                     <option value="failed/cancelled">Failed / Cancelled</option>
                   </select>
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {inp("Terminal Type", projectModalTermType, setProjectModalTermType, { placeholder: "e.g. bash, node" })}
+                  {inp("Terminal Script", projectModalTermScript, setProjectModalTermScript, { placeholder: "echo hello" })}
                 </div>
               </div>
               <div className="flex justify-end gap-2 mt-6">
