@@ -72,6 +72,8 @@ export default function AdminPage() {
   const [projectPage, setProjectPage] = useState(1);
   const projectPerPage = 10;
 
+  const [skillCategory, setSkillCategory] = useState("All");
+
   const [stackPickerOpen, setStackPickerOpen] = useState<number | null>(null);
   const [stackSearch, setStackSearch] = useState("");
   const [newSkillMode, setNewSkillMode] = useState<"" | "confirm" | "form">("");
@@ -709,51 +711,73 @@ export default function AdminPage() {
             <div className="space-y-4">
               <SectionHeader title="Skills" onAdd={() => addSkill()} />
               <p className="text-on-surface-variant text-sm mb-4">Category and percentage are managed automatically. Percentage is set based on level.</p>
-              {skills.map((s) => {
+              {(() => {
                 const skillCategories = categories.filter(c => c.type === "skill");
+                const catTabs = ["All", ...skillCategories.map(c => c.name)];
+                const catCounts: Record<string, number> = { All: skills.length };
+                skillCategories.forEach(c => { catCounts[c.name] = skills.filter(s => s.category === c.name).length; });
+                const displayed = skillCategory === "All" ? skills : skills.filter(s => s.category === skillCategory);
                 return (
-                  <div key={s.id} className="bg-surface border border-outline-variant rounded p-4 space-y-3">
-                    <div className="grid grid-cols-[1fr_1fr_140px_140px] gap-3 items-end">
-                      <div>{inp("Name", s.name, (v) => { const n = [...skills]; n[skills.indexOf(s)] = { ...s, name: v }; setSkills(n); })}</div>
-                      <div>{inp("Icon (Material)", s.icon, (v) => { const n = [...skills]; n[skills.indexOf(s)] = { ...s, icon: v }; setSkills(n); })}</div>
-                      <div>
-                        <label className="text-xs text-on-surface-variant mb-1 block">Level</label>
-                        <select
-                          className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
-                          value={s.level}
-                          onChange={(e) => {
-                            const lvl = e.target.value;
-                            const pctMap: Record<string, number> = { expertise: 95, comfortable: 75, familiar: 55, learning: 35 };
-                            const n = [...skills]; n[skills.indexOf(s)] = { ...s, level: lvl, percent: pctMap[lvl] ?? 70 }; setSkills(n);
-                          }}
-                        >
-                          <option value="expertise">Expertise (95%)</option>
-                          <option value="comfortable">Comfortable (75%)</option>
-                          <option value="familiar">Familiar (55%)</option>
-                          <option value="learning">Learning (35%)</option>
-                        </select>
-                      </div>
-                      <div>
-                        <label className="text-xs text-on-surface-variant mb-1 block">Category</label>
-                        <select
-                          className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
-                          value={skillCategories.some(c => c.name === s.category) ? s.category : ""}
-                          onChange={(e) => {
-                            const n = [...skills]; n[skills.indexOf(s)] = { ...s, category: e.target.value }; setSkills(n);
-                          }}
-                        >
-                          <option value="">Select Category</option>
-                          {skillCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                        </select>
-                      </div>
+                  <>
+                    <div className="flex gap-2 flex-wrap mb-4">
+                      {catTabs.map(ct => (
+                        <button key={ct} onClick={() => setSkillCategory(ct)}
+                          className={`px-4 py-1.5 text-xs font-bold rounded border transition-all ${
+                            skillCategory === ct
+                              ? "bg-primary text-on-primary border-primary"
+                              : "border-outline-variant text-on-surface-variant hover:border-primary"
+                          }`}>
+                          {ct} ({catCounts[ct] ?? 0})
+                        </button>
+                      ))}
                     </div>
-                    <div className="flex justify-end gap-2">
-                      <button onClick={() => saveSkill(s)} className="text-primary text-xs hover:underline">Save</button>
-                      <button onClick={() => removeSkill(s.id)} className="text-error text-xs hover:underline">Delete</button>
-                    </div>
-                  </div>
+                    {displayed.map((s) => {
+                      return (
+                        <div key={s.id} className="bg-surface border border-outline-variant rounded p-4 space-y-3">
+                          <div className="grid grid-cols-[1fr_1fr_140px_140px] gap-3 items-end">
+                            <div>{inp("Name", s.name, (v) => { const n = [...skills]; n[skills.indexOf(s)] = { ...s, name: v }; setSkills(n); })}</div>
+                            <div>{inp("Icon (Material)", s.icon, (v) => { const n = [...skills]; n[skills.indexOf(s)] = { ...s, icon: v }; setSkills(n); })}</div>
+                            <div>
+                              <label className="text-xs text-on-surface-variant mb-1 block">Level</label>
+                              <select
+                                className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
+                                value={s.level}
+                                onChange={(e) => {
+                                  const lvl = e.target.value;
+                                  const pctMap: Record<string, number> = { expertise: 95, comfortable: 75, familiar: 55, learning: 35 };
+                                  const n = [...skills]; n[skills.indexOf(s)] = { ...s, level: lvl, percent: pctMap[lvl] ?? 70 }; setSkills(n);
+                                }}
+                              >
+                                <option value="expertise">Expertise (95%)</option>
+                                <option value="comfortable">Comfortable (75%)</option>
+                                <option value="familiar">Familiar (55%)</option>
+                                <option value="learning">Learning (35%)</option>
+                              </select>
+                            </div>
+                            <div>
+                              <label className="text-xs text-on-surface-variant mb-1 block">Category</label>
+                              <select
+                                className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
+                                value={skillCategories.some(c => c.name === s.category) ? s.category : ""}
+                                onChange={(e) => {
+                                  const n = [...skills]; n[skills.indexOf(s)] = { ...s, category: e.target.value }; setSkills(n);
+                                }}
+                              >
+                                <option value="">Select Category</option>
+                                {skillCategories.map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                              </select>
+                            </div>
+                          </div>
+                          <div className="flex justify-end gap-2">
+                            <button onClick={() => saveSkill(s)} className="text-primary text-xs hover:underline">Save</button>
+                            <button onClick={() => removeSkill(s.id)} className="text-error text-xs hover:underline">Delete</button>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </>
                 );
-              })}
+              })()}
             </div>
           )}
 

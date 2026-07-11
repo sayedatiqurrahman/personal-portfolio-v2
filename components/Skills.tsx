@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Skill } from "@/lib/types";
 
 type ViewMode = "npm" | "normal";
@@ -38,6 +38,10 @@ const LEVEL_BAR: Record<string, string> = {
 export default function Skills({ skills }: { skills: Skill[] }) {
   const [view, setView] = useState<ViewMode>("normal");
   const [levelFilter, setLevelFilter] = useState<string>("all");
+
+  useEffect(() => {
+    if (window.innerWidth < 768) setView("npm");
+  }, []);
 
   if (!skills?.length) return null;
 
