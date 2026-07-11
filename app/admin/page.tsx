@@ -74,6 +74,18 @@ export default function AdminPage() {
 
   const [skillCategory, setSkillCategory] = useState("All");
 
+  const [skillModal, setSkillModal] = useState(false);
+  const [skillModalName, setSkillModalName] = useState("");
+  const [skillModalIcon, setSkillModalIcon] = useState("code");
+  const [skillModalLevel, setSkillModalLevel] = useState("comfortable");
+  const [skillModalCategory, setSkillModalCategory] = useState("");
+
+  const [projectModal, setProjectModal] = useState(false);
+  const [projectModalTitle, setProjectModalTitle] = useState("");
+  const [projectModalCategory, setProjectModalCategory] = useState("");
+  const [projectModalDesc, setProjectModalDesc] = useState("");
+  const [projectModalStatus, setProjectModalStatus] = useState("ongoing");
+
   const [stackPickerOpen, setStackPickerOpen] = useState<number | null>(null);
   const [stackSearch, setStackSearch] = useState("");
   const [newSkillMode, setNewSkillMode] = useState<"" | "confirm" | "form">("");
@@ -81,6 +93,14 @@ export default function AdminPage() {
   const [newSkillCategory, setNewSkillCategory] = useState("");
   const [newSkillIcon, setNewSkillIcon] = useState("code");
   const stackRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleEscape(e: KeyboardEvent) {
+      if (e.key === "Escape") { setSkillModal(false); setProjectModal(false); }
+    }
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, []);
 
   const loadAll = useCallback(async () => {
     setLoading(true);
@@ -148,10 +168,18 @@ export default function AdminPage() {
     } catch (e) { alert("Failed to delete role: " + e); }
   }
 
-  async function addProject() {
+  function openProjectModal() {
+    setProjectModalTitle("");
+    setProjectModalCategory(categories.filter(c => c.type === "project")[0]?.name || "");
+    setProjectModalDesc("");
+    setProjectModalStatus("ongoing");
+    setProjectModal(true);
+  }
+  async function submitProjectModal() {
     try {
-      await api<Project>("/projects", { method: "POST", body: JSON.stringify({ title: "New Project", sortOrder: projects.length }) });
+      await api<Project>("/projects", { method: "POST", body: JSON.stringify({ title: projectModalTitle, category: projectModalCategory, description: projectModalDesc, status: projectModalStatus, sortOrder: projects.length }) });
       setProjects(await api<Project[]>("/projects"));
+      setProjectModal(false);
     } catch (e) { alert("Failed to add project: " + e); }
   }
   async function saveProject(p: Project) {
@@ -168,11 +196,19 @@ export default function AdminPage() {
     } catch (e) { alert("Failed to delete project: " + e); }
   }
 
-  async function addSkill() {
+  function openSkillModal() {
+    setSkillModalName("");
+    setSkillModalIcon("code");
+    setSkillModalLevel("comfortable");
+    setSkillModalCategory(categories.filter(c => c.type === "skill")[0]?.name || "");
+    setSkillModal(true);
+  }
+  async function submitSkillModal() {
     try {
-      const firstCat = categories.filter(c => c.type === "skill")[0]?.name || "";
-      await api<Skill>("/skills", { method: "POST", body: JSON.stringify({ name: "New Skill", icon: "code", percent: 70, level: "expertise", category: firstCat, sortOrder: skills.length }) });
+      const pctMap: Record<string, number> = { expertise: 95, comfortable: 75, familiar: 55, learning: 35 };
+      await api<Skill>("/skills", { method: "POST", body: JSON.stringify({ name: skillModalName, icon: skillModalIcon || "code", percent: pctMap[skillModalLevel] ?? 70, level: skillModalLevel, category: skillModalCategory, sortOrder: skills.length }) });
       setSkills(await api<Skill[]>("/skills"));
+      setSkillModal(false);
     } catch (e) { alert("Failed to add skill: " + e); }
   }
   async function saveSkill(s: Skill) {
@@ -450,7 +486,7 @@ export default function AdminPage() {
             <div className="space-y-4">
               <SectionHeader title="Roles / Titles (Typewriter)" onAdd={addRole} />
               <p className="text-on-surface-variant text-sm mb-4">These cycle through with a glitch typewriter effect on the hero section.</p>
-              {roles.map((r) => (
+              {[...roles].reverse().map((r) => (
                 <div key={r.id} className="bg-surface border border-outline-variant rounded p-4 flex gap-4 items-end">
                   <div className="flex-1">{inp("Role Title", r.title, (v) => { const n = [...roles]; n[roles.indexOf(r)] = { ...r, title: v }; setRoles(n); })}</div>
                   <div className="w-20">{numInp("Order", r.sortOrder, (v) => { const n = [...roles]; n[roles.indexOf(r)] = { ...r, sortOrder: v }; setRoles(n); })}</div>
@@ -468,7 +504,7 @@ export default function AdminPage() {
             <div className="space-y-4">
               <SectionHeader title="Terminal Info Fields" onAdd={addTermInfo} />
               <p className="text-on-surface-variant text-sm mb-4">These values appear in the hero terminal block and can be edited here at any time.</p>
-              {termInfo.map((t) => (
+              {[...termInfo].reverse().map((t) => (
                 <div key={t.id} className="bg-surface border border-outline-variant rounded p-4 grid grid-cols-[1fr_1fr_2fr_80px] gap-3 items-end">
                   <div>{inp("Key", t.key, (v) => { const n = [...termInfo]; n[termInfo.indexOf(t)] = { ...t, key: v }; setTermInfo(n); })}</div>
                   <div>{inp("Label", t.label, (v) => { const n = [...termInfo]; n[termInfo.indexOf(t)] = { ...t, label: v }; setTermInfo(n); })}</div>
@@ -487,7 +523,7 @@ export default function AdminPage() {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <h2 className="text-lg font-bold text-primary">Projects</h2>
-                <button onClick={addProject} className="px-4 py-2 bg-primary text-on-primary rounded text-sm font-bold">+ Add Project</button>
+                <button onClick={openProjectModal} className="px-4 py-2 bg-primary text-on-primary rounded text-sm font-bold">+ Add Project</button>
               </div>
 
               <div className="flex gap-3">
@@ -506,7 +542,7 @@ export default function AdminPage() {
                 {totalProjectPages > 1 && <span>Page {projectPage} of {totalProjectPages}</span>}
               </div>
 
-              {visibleProjects.map((p) => (
+              {[...visibleProjects].reverse().map((p) => (
                 <details key={p.id} className="bg-surface border border-outline-variant rounded">
                   <summary className="p-4 cursor-pointer flex justify-between items-center hover:bg-surface-variant">
                     <span className="font-bold text-primary">
@@ -709,7 +745,7 @@ export default function AdminPage() {
           {/* ─── Skills ───────────────────────────────── */}
           {tab === "skills" && (
             <div className="space-y-4">
-              <SectionHeader title="Skills" onAdd={() => addSkill()} />
+              <SectionHeader title="Skills" onAdd={openSkillModal} />
               <p className="text-on-surface-variant text-sm mb-4">Category and percentage are managed automatically. Percentage is set based on level.</p>
               {(() => {
                 const skillCategories = categories.filter(c => c.type === "skill");
@@ -731,7 +767,7 @@ export default function AdminPage() {
                         </button>
                       ))}
                     </div>
-                    {displayed.map((s) => {
+                    {[...displayed].reverse().map((s) => {
                       return (
                         <div key={s.id} className="bg-surface border border-outline-variant rounded p-4 space-y-3">
                           <div className="grid grid-cols-[1fr_1fr_140px_140px] gap-3 items-end">
@@ -841,7 +877,7 @@ export default function AdminPage() {
           {tab === "education" && (
             <div className="space-y-4">
               <SectionHeader title="Education" onAdd={addEducation} />
-              {education.map((e) => (
+              {[...education].reverse().map((e) => (
                 <details key={e.id} className="bg-surface border border-outline-variant rounded">
                   <summary className="p-4 cursor-pointer flex justify-between items-center hover:bg-surface-variant">
                     <span className="font-bold text-primary">{e.institution}</span>
@@ -871,7 +907,7 @@ export default function AdminPage() {
           {tab === "certificates" && (
             <div className="space-y-4">
               <SectionHeader title="Certificates" onAdd={addCertificate} />
-              {certificates.map((c) => (
+              {[...certificates].reverse().map((c) => (
                 <div key={c.id} className="bg-surface border border-outline-variant rounded p-4 space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="font-bold text-primary">{c.name}</span>
@@ -918,7 +954,7 @@ export default function AdminPage() {
           {tab === "achievements" && (
             <div className="space-y-4">
               <SectionHeader title="Achievements & Rewards" onAdd={addAchievement} />
-              {achievements.map((a) => (
+              {[...achievements].reverse().map((a) => (
                 <div key={a.id} className="bg-surface border border-outline-variant rounded p-4 space-y-3">
                   <div className="flex justify-between items-center">
                     <span className="font-bold text-primary">{a.title}</span>
@@ -949,7 +985,7 @@ export default function AdminPage() {
           {tab === "reviews" && (
             <div className="space-y-4">
               <SectionHeader title="Client Reviews" onAdd={addReview} />
-              {reviews.map((r) => (
+              {[...reviews].reverse().map((r) => (
                 <details key={r.id} className="bg-surface border border-outline-variant rounded">
                   <summary className="p-4 cursor-pointer flex justify-between items-center hover:bg-surface-variant">
                     <span className="font-bold text-primary">{r.clientName} {r.company && `@ ${r.company}`}</span>
@@ -1000,6 +1036,72 @@ export default function AdminPage() {
             </div>
           )}
         </main>
+
+        {/* ─── Skill Modal ─────────────────────────────── */}
+        {skillModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setSkillModal(false)}>
+            <div className="bg-surface border border-outline-variant rounded-lg p-6 w-full max-w-md shadow-xl" onClick={(e) => e.stopPropagation()}>
+              <h3 className="text-lg font-bold text-primary mb-4">Add New Skill</h3>
+              <div className="space-y-3">
+                {inp("Name", skillModalName, setSkillModalName, { placeholder: "e.g. React" })}
+                {inp("Icon (Material)", skillModalIcon, setSkillModalIcon, { placeholder: "e.g. code, javascript" })}
+                <div>
+                  <label className="text-xs text-on-surface-variant mb-1 block">Level</label>
+                  <select className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none" value={skillModalLevel} onChange={(e) => setSkillModalLevel(e.target.value)}>
+                    <option value="expertise">Expertise (95%)</option>
+                    <option value="comfortable">Comfortable (75%)</option>
+                    <option value="familiar">Familiar (55%)</option>
+                    <option value="learning">Learning (35%)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-on-surface-variant mb-1 block">Category</label>
+                  <select className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none" value={skillModalCategory} onChange={(e) => setSkillModalCategory(e.target.value)}>
+                    <option value="">Select Category</option>
+                    {categories.filter(c => c.type === "skill").map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                  </select>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 mt-6">
+                <button onClick={() => setSkillModal(false)} className="px-4 py-2 bg-surface-variant text-on-surface rounded text-sm font-bold">Cancel</button>
+                <button onClick={submitSkillModal} disabled={!skillModalName.trim()} className="px-4 py-2 bg-primary text-on-primary rounded text-sm font-bold disabled:opacity-50">Add Skill</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ─── Project Modal ────────────────────────────── */}
+        {projectModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setProjectModal(false)}>
+            <div className="bg-surface border border-outline-variant rounded-lg p-6 w-full max-w-md shadow-xl" onClick={(e) => e.stopPropagation()}>
+              <h3 className="text-lg font-bold text-primary mb-4">Add New Project</h3>
+              <div className="space-y-3">
+                {inp("Title", projectModalTitle, setProjectModalTitle, { placeholder: "e.g. My Portfolio" })}
+                <div>
+                  <label className="text-xs text-on-surface-variant mb-1 block">Category</label>
+                  <select className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none" value={projectModalCategory} onChange={(e) => setProjectModalCategory(e.target.value)}>
+                    <option value="">Select Category</option>
+                    {categories.filter(c => c.type === "project").map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                  </select>
+                </div>
+                {inp("Description", projectModalDesc, setProjectModalDesc, { placeholder: "Short description" })}
+                <div>
+                  <label className="text-xs text-on-surface-variant mb-1 block">Status</label>
+                  <select className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none" value={projectModalStatus} onChange={(e) => setProjectModalStatus(e.target.value)}>
+                    <option value="ongoing">Ongoing</option>
+                    <option value="finished">Finished</option>
+                    <option value="staging">Staging</option>
+                    <option value="failed/cancelled">Failed / Cancelled</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 mt-6">
+                <button onClick={() => setProjectModal(false)} className="px-4 py-2 bg-surface-variant text-on-surface rounded text-sm font-bold">Cancel</button>
+                <button onClick={submitProjectModal} disabled={!projectModalTitle.trim()} className="px-4 py-2 bg-primary text-on-primary rounded text-sm font-bold disabled:opacity-50">Add Project</button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
