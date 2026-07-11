@@ -11,6 +11,7 @@ async function main() {
   await prisma.skill.deleteMany();
   await prisma.project.deleteMany();
   await prisma.role.deleteMany();
+  await prisma.achievement.deleteMany();
   await prisma.profile.deleteMany();
 
   // ─── Profile ──────────────────────────────────────────
@@ -162,6 +163,14 @@ async function main() {
     data: [
       { clientName: "John Smith", company: "TechCorp Inc.", rating: 5, text: "Excellent work on our web application. Highly professional and delivered on time.", date: "2024-01", sortOrder: 0 },
       { clientName: "Sarah Lee", company: "StartupXYZ", rating: 5, text: "Amazing developer with great attention to detail. Would definitely work with again.", date: "2024-03", sortOrder: 1 },
+    ],
+  });
+
+  // ─── Achievements ──────────────────────────────────────
+  await prisma.achievement.createMany({
+    data: [
+      { title: "Best Developer Award", issuer: "Programming Hero", date: "2023", description: "Recognized as the best developer in the cohort for outstanding project work.", url: "", image: "", sortOrder: 0 },
+      { title: "73+ GitHub Repositories", issuer: "GitHub", date: "2024", description: "Maintained over 73 open-source and personal projects on GitHub.", url: "https://github.com/sayedatiqurrahman", image: "", sortOrder: 1 },
     ],
   });
 
