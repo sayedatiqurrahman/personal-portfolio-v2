@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
 import { getProjects, createProject, updateProject, deleteProject } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -14,25 +13,31 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json();
-  const item = await createProject(body);
-  revalidatePath("/");
-  revalidatePath("/projects");
-  return NextResponse.json(item);
+  try {
+    const body = await req.json();
+    const item = await createProject(body);
+    return NextResponse.json(item);
+  } catch {
+    return NextResponse.json(null, { status: 500 });
+  }
 }
 
 export async function PUT(req: NextRequest) {
-  const { id, ...data } = await req.json();
-  await updateProject(id, data);
-  revalidatePath("/");
-  revalidatePath("/projects");
-  return NextResponse.json({ ok: true });
+  try {
+    const { id, ...data } = await req.json();
+    await updateProject(id, data);
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json({ ok: false }, { status: 500 });
+  }
 }
 
 export async function DELETE(req: NextRequest) {
-  const { id } = await req.json();
-  await deleteProject(id);
-  revalidatePath("/");
-  revalidatePath("/projects");
-  return NextResponse.json({ ok: true });
+  try {
+    const { id } = await req.json();
+    await deleteProject(id);
+    return NextResponse.json({ ok: true });
+  } catch {
+    return NextResponse.json({ ok: false }, { status: 500 });
+  }
 }

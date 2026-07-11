@@ -71,21 +71,20 @@ export default function AdminPage() {
 
   const loadAll = useCallback(async () => {
     setLoading(true);
-    try {
-      const [p, r, pr, s, e, c, a, rev, t] = await Promise.all([
-        api<Profile>("/profile"),
-        api<Role[]>("/roles"),
-        api<Project[]>("/projects"),
-        api<Skill[]>("/skills"),
-        api<Education[]>("/education"),
-        api<Certificate[]>("/certificates"),
-        api<Achievement[]>("/achievements"),
-        api<Review[]>("/reviews"),
-        api<TermInfo[]>("/terminal-info"),
-      ]);
-      setProfile(p); setRoles(r); setProjects(pr); setSkills(s);
-      setEducation(e); setCertificates(c); setAchievements(a); setReviews(rev); setTermInfo(t);
-    } catch (e) { console.error("Failed to load data:", e); }
+    const settle = <T,>(p: Promise<T>, fallback: T) => p.catch(() => fallback);
+    const [p, r, pr, s, e, c, a, rev, t] = await Promise.all([
+      settle(api<Profile>("/profile"), null),
+      settle(api<Role[]>("/roles"), []),
+      settle(api<Project[]>("/projects"), []),
+      settle(api<Skill[]>("/skills"), []),
+      settle(api<Education[]>("/education"), []),
+      settle(api<Certificate[]>("/certificates"), []),
+      settle(api<Achievement[]>("/achievements"), []),
+      settle(api<Review[]>("/reviews"), []),
+      settle(api<TermInfo[]>("/terminal-info"), []),
+    ]);
+    setProfile(p); setRoles(r); setProjects(pr); setSkills(s);
+    setEducation(e); setCertificates(c); setAchievements(a); setReviews(rev); setTermInfo(t);
     setLoading(false);
   }, []);
 
@@ -109,161 +108,161 @@ export default function AdminPage() {
 
   async function addRole() {
     try {
-      const r = await api<Role>("/roles", { method: "POST", body: JSON.stringify({ title: "New Role", sortOrder: roles.length }) });
-      setRoles([...roles, r]);
+      await api<Role>("/roles", { method: "POST", body: JSON.stringify({ title: "New Role", sortOrder: roles.length }) });
+      setRoles(await api<Role[]>("/roles"));
     } catch (e) { alert("Failed to add role: " + e); }
   }
   async function saveRole(r: Role) {
     try {
       await api("/roles", { method: "PUT", body: JSON.stringify(r) });
-      setRoles(roles.map((x) => x.id === r.id ? { ...r } : x));
+      setRoles(await api<Role[]>("/roles"));
       flash();
     } catch (e) { alert("Failed to save role: " + e); }
   }
   async function removeRole(id: number) {
     try {
       await api("/roles", { method: "DELETE", body: JSON.stringify({ id }) });
-      setRoles(roles.filter((r) => r.id !== id));
+      setRoles(await api<Role[]>("/roles"));
     } catch (e) { alert("Failed to delete role: " + e); }
   }
 
   async function addProject() {
     try {
-      const p = await api<Project>("/projects", { method: "POST", body: JSON.stringify({ title: "New Project", sortOrder: projects.length }) });
-      setProjects([...projects, p]);
+      await api<Project>("/projects", { method: "POST", body: JSON.stringify({ title: "New Project", sortOrder: projects.length }) });
+      setProjects(await api<Project[]>("/projects"));
     } catch (e) { alert("Failed to add project: " + e); }
   }
   async function saveProject(p: Project) {
     try {
       await api("/projects", { method: "PUT", body: JSON.stringify(p) });
-      setProjects(projects.map((x) => x.id === p.id ? { ...p } : x));
+      setProjects(await api<Project[]>("/projects"));
       flash();
     } catch (e) { alert("Failed to save project: " + e); }
   }
   async function removeProject(id: number) {
     try {
       await api("/projects", { method: "DELETE", body: JSON.stringify({ id }) });
-      setProjects(projects.filter((p) => p.id !== id));
+      setProjects(await api<Project[]>("/projects"));
     } catch (e) { alert("Failed to delete project: " + e); }
   }
 
   async function addSkill() {
     try {
-      const s = await api<Skill>("/skills", { method: "POST", body: JSON.stringify({ name: "New Skill", icon: "code", percent: 70, level: "expertise", category: "Backend", sortOrder: skills.length }) });
-      setSkills([...skills, s]);
+      await api<Skill>("/skills", { method: "POST", body: JSON.stringify({ name: "New Skill", icon: "code", percent: 70, level: "expertise", category: "Backend", sortOrder: skills.length }) });
+      setSkills(await api<Skill[]>("/skills"));
     } catch (e) { alert("Failed to add skill: " + e); }
   }
   async function saveSkill(s: Skill) {
     try {
       await api("/skills", { method: "PUT", body: JSON.stringify(s) });
-      setSkills(skills.map((x) => x.id === s.id ? { ...s } : x));
+      setSkills(await api<Skill[]>("/skills"));
       flash();
     } catch (e) { alert("Failed to save skill: " + e); }
   }
   async function removeSkill(id: number) {
     try {
       await api("/skills", { method: "DELETE", body: JSON.stringify({ id }) });
-      setSkills(skills.filter((s) => s.id !== id));
+      setSkills(await api<Skill[]>("/skills"));
     } catch (e) { alert("Failed to delete skill: " + e); }
   }
 
   async function addEducation() {
     try {
-      const e = await api<Education>("/education", { method: "POST", body: JSON.stringify({ institution: "New Institution", sortOrder: education.length }) });
-      setEducation([...education, e]);
+      await api<Education>("/education", { method: "POST", body: JSON.stringify({ institution: "New Institution", sortOrder: education.length }) });
+      setEducation(await api<Education[]>("/education"));
     } catch (e) { alert("Failed to add education: " + e); }
   }
   async function saveEducation(e: Education) {
     try {
       await api("/education", { method: "PUT", body: JSON.stringify(e) });
-      setEducation(education.map((x) => x.id === e.id ? { ...e } : x));
+      setEducation(await api<Education[]>("/education"));
       flash();
     } catch (e) { alert("Failed to save education: " + e); }
   }
   async function removeEducation(id: number) {
     try {
       await api("/education", { method: "DELETE", body: JSON.stringify({ id }) });
-      setEducation(education.filter((e) => e.id !== id));
+      setEducation(await api<Education[]>("/education"));
     } catch (e) { alert("Failed to delete education: " + e); }
   }
 
   async function addCertificate() {
     try {
-      const c = await api<Certificate>("/certificates", { method: "POST", body: JSON.stringify({ name: "New Certificate", sortOrder: certificates.length }) });
-      setCertificates([...certificates, c]);
+      await api<Certificate>("/certificates", { method: "POST", body: JSON.stringify({ name: "New Certificate", sortOrder: certificates.length }) });
+      setCertificates(await api<Certificate[]>("/certificates"));
     } catch (e) { alert("Failed to add certificate: " + e); }
   }
   async function saveCertificate(c: Certificate) {
     try {
       await api("/certificates", { method: "PUT", body: JSON.stringify(c) });
-      setCertificates(certificates.map((x) => x.id === c.id ? { ...c } : x));
+      setCertificates(await api<Certificate[]>("/certificates"));
       flash();
     } catch (e) { alert("Failed to save certificate: " + e); }
   }
   async function removeCertificate(id: number) {
     try {
       await api("/certificates", { method: "DELETE", body: JSON.stringify({ id }) });
-      setCertificates(certificates.filter((c) => c.id !== id));
+      setCertificates(await api<Certificate[]>("/certificates"));
     } catch (e) { alert("Failed to delete certificate: " + e); }
   }
 
   async function addAchievement() {
     try {
-      const a = await api<Achievement>("/achievements", { method: "POST", body: JSON.stringify({ title: "New Achievement", sortOrder: achievements.length }) });
-      setAchievements([...achievements, a]);
+      await api<Achievement>("/achievements", { method: "POST", body: JSON.stringify({ title: "New Achievement", sortOrder: achievements.length }) });
+      setAchievements(await api<Achievement[]>("/achievements"));
     } catch (e) { alert("Failed to add achievement: " + e); }
   }
   async function saveAchievement(a: Achievement) {
     try {
       await api("/achievements", { method: "PUT", body: JSON.stringify(a) });
-      setAchievements(achievements.map((x) => x.id === a.id ? { ...a } : x));
+      setAchievements(await api<Achievement[]>("/achievements"));
       flash();
     } catch (e) { alert("Failed to save achievement: " + e); }
   }
   async function removeAchievement(id: number) {
     try {
       await api("/achievements", { method: "DELETE", body: JSON.stringify({ id }) });
-      setAchievements(achievements.filter((a) => a.id !== id));
+      setAchievements(await api<Achievement[]>("/achievements"));
     } catch (e) { alert("Failed to delete achievement: " + e); }
   }
 
   async function addReview() {
     try {
-      const r = await api<Review>("/reviews", { method: "POST", body: JSON.stringify({ clientName: "New Client", rating: 5, sortOrder: reviews.length }) });
-      setReviews([...reviews, r]);
+      await api<Review>("/reviews", { method: "POST", body: JSON.stringify({ clientName: "New Client", rating: 5, sortOrder: reviews.length }) });
+      setReviews(await api<Review[]>("/reviews"));
     } catch (e) { alert("Failed to add review: " + e); }
   }
   async function saveReview(r: Review) {
     try {
       await api("/reviews", { method: "PUT", body: JSON.stringify(r) });
-      setReviews(reviews.map((x) => x.id === r.id ? { ...r } : x));
+      setReviews(await api<Review[]>("/reviews"));
       flash();
     } catch (e) { alert("Failed to save review: " + e); }
   }
   async function removeReview(id: number) {
     try {
       await api("/reviews", { method: "DELETE", body: JSON.stringify({ id }) });
-      setReviews(reviews.filter((r) => r.id !== id));
+      setReviews(await api<Review[]>("/reviews"));
     } catch (e) { alert("Failed to delete review: " + e); }
   }
 
   async function addTermInfo() {
     try {
-      const t = await api<TermInfo>("/terminal-info", { method: "POST", body: JSON.stringify({ key: "new_key", label: "New Key", value: "", sortOrder: termInfo.length }) });
-      setTermInfo([...termInfo, t]);
+      await api<TermInfo>("/terminal-info", { method: "POST", body: JSON.stringify({ key: "new_key", label: "New Key", value: "", sortOrder: termInfo.length }) });
+      setTermInfo(await api<TermInfo[]>("/terminal-info"));
     } catch (e) { alert("Failed to add terminal info: " + e); }
   }
   async function saveTermInfo(t: TermInfo) {
     try {
       await api("/terminal-info", { method: "PUT", body: JSON.stringify(t) });
-      setTermInfo(termInfo.map((x) => x.id === t.id ? { ...t } : x));
+      setTermInfo(await api<TermInfo[]>("/terminal-info"));
       flash();
     } catch (e) { alert("Failed to save terminal info: " + e); }
   }
   async function removeTermInfo(id: number) {
     try {
       await api("/terminal-info", { method: "DELETE", body: JSON.stringify({ id }) });
-      setTermInfo(termInfo.filter((t) => t.id !== id));
+      setTermInfo(await api<TermInfo[]>("/terminal-info"));
     } catch (e) { alert("Failed to delete terminal info: " + e); }
   }
 
