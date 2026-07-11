@@ -542,119 +542,116 @@ export default function AdminPage() {
                     {inp("Description", p.description, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, description: v }; setProjects(n); })}
                     {inp("Long Description", p.longDescription, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, longDescription: v }; setProjects(n); }, { multiline: true })}
                     <div className="grid grid-cols-2 gap-3">
-                      <div ref={stackRef}>
-                        <label className="text-xs text-on-surface-variant mb-1 block">Stack (from Skills)</label>
-                        <div className="relative">
-                          <div
-                            className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none min-h-[38px] flex flex-wrap gap-1 cursor-pointer"
-                            onClick={() => { setStackPickerOpen(stackPickerOpen === p.id ? null : p.id); setStackSearch(""); setNewSkillMode(""); }}
-                          >
-                            {(() => { try { return JSON.parse(p.stack); } catch { return []; } })().map((name: string) => (
+                      <div ref={stackRef} className="relative">
+                        <label className="text-xs text-on-surface-variant mb-1 block">Stack (Skills)</label>
+                        {(() => { const arr: string[] = (() => { try { return JSON.parse(p.stack); } catch { return []; } })(); return arr.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mb-1">
+                            {arr.map((name: string) => (
                               <span key={name} className="inline-flex items-center gap-1 bg-primary/20 text-primary rounded px-2 py-0.5 text-xs">
                                 {name}
-                                <button onClick={(e) => { e.stopPropagation(); const arr: string[] = (() => { try { return JSON.parse(p.stack); } catch { return []; } })(); const n = [...projects]; n[projects.indexOf(p)] = { ...p, stack: JSON.stringify(arr.filter(x => x !== name)) }; setProjects(n); }} className="text-error hover:text-error/80 font-bold">×</button>
+                                <button onClick={() => { const next = arr.filter(x => x !== name); const n = [...projects]; n[projects.indexOf(p)] = { ...p, stack: JSON.stringify(next) }; setProjects(n); }} className="text-error hover:text-error/80 font-bold">×</button>
                               </span>
                             ))}
-                            {!(() => { try { return JSON.parse(p.stack); } catch { return []; } })().length && <span className="text-on-surface-variant">Click to select skills...</span>}
                           </div>
-                          {stackPickerOpen === p.id && (
-                            <div className="absolute z-50 mt-1 w-full bg-surface-container-lowest border border-outline-variant rounded shadow-lg max-h-60 overflow-y-auto">
-                              <div className="sticky top-0 bg-surface-container-lowest p-2 border-b border-outline-variant">
-                                <input
-                                  autoFocus
-                                  className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
-                                  placeholder="Search skills..."
-                                  value={stackSearch}
-                                  onChange={(e) => { setStackSearch(e.target.value); setNewSkillMode(""); }}
-                                />
-                              </div>
-                              {skills.filter(s => s.name.toLowerCase().includes(stackSearch.toLowerCase())).map(sk => {
-                                const selected: string[] = (() => { try { return JSON.parse(p.stack); } catch { return []; } })();
-                                const isSelected = selected.includes(sk.name);
-                                return (
-                                  <div key={sk.id}
-                                    className={`px-3 py-2 text-sm cursor-pointer flex items-center gap-2 ${isSelected ? "bg-primary/10 text-primary" : "hover:bg-surface-variant text-on-surface"}`}
-                                    onClick={() => {
-                                      const arr: string[] = (() => { try { return JSON.parse(p.stack); } catch { return []; } })();
-                                      const next = isSelected ? arr.filter(x => x !== sk.name) : [...arr, sk.name];
-                                      const n = [...projects]; n[projects.indexOf(p)] = { ...p, stack: JSON.stringify(next) }; setProjects(n);
-                                    }}
-                                  >
-                                    <span className="material-symbols-outlined text-base">{sk.icon}</span>
-                                    <span className="flex-1">{sk.name}</span>
-                                    {isSelected && <span className="material-symbols-outlined text-base text-primary">check</span>}
-                                  </div>
-                                );
-                              })}
-                              {stackSearch && !skills.some(s => s.name.toLowerCase() === stackSearch.toLowerCase()) && (
-                                <div className="border-t border-outline-variant">
-                                  {newSkillMode === "" && (
-                                    <div className="px-3 py-2 text-sm cursor-pointer text-secondary hover:bg-surface-variant flex items-center gap-2"
-                                      onClick={() => setNewSkillMode("confirm")}>
-                                      <span className="material-symbols-outlined text-base">add</span>
-                                      Create &ldquo;{stackSearch}&rdquo; as new skill
-                                    </div>
-                                  )}
-                                  {newSkillMode === "confirm" && (
-                                    <div className="p-3 space-y-2 bg-surface">
-                                      <div className="text-sm text-on-surface">Do you want to save <strong className="text-primary">&ldquo;{stackSearch}&rdquo;</strong> to your skill list?</div>
-                                      <div className="flex gap-2">
-                                        <button className="px-3 py-1.5 bg-primary text-on-primary rounded text-xs font-bold" onClick={() => {
-                                          setNewSkillCategory(categories.filter(c => c.type === "skill")[0]?.name || "");
-                                          setNewSkillIcon("code");
-                                          setNewSkillLevel("comfortable");
-                                          setNewSkillMode("form");
-                                        }}>Yes, add it</button>
-                                        <button className="px-3 py-1.5 bg-surface-variant text-on-surface rounded text-xs" onClick={() => setNewSkillMode("")}>Cancel</button>
-                                      </div>
-                                    </div>
-                                  )}
-                                  {newSkillMode === "form" && (
-                                    <div className="p-3 space-y-2 bg-surface">
-                                      <div className="text-xs text-on-surface-variant font-bold">New Skill: {stackSearch}</div>
-                                      <div>
-                                        <label className="text-xs text-on-surface-variant mb-1 block">Icon (Material)</label>
-                                        <input className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
-                                          value={newSkillIcon} onChange={(e) => setNewSkillIcon(e.target.value)} placeholder="e.g. code, javascript, dns" />
-                                      </div>
-                                      <div>
-                                        <label className="text-xs text-on-surface-variant mb-1 block">Level</label>
-                                        <select className="w-full bg-surface border border-outline-variant rounded p-2 text-sm" value={newSkillLevel}
-                                          onChange={(e) => setNewSkillLevel(e.target.value)}>
-                                          <option value="expertise">Expertise (95%)</option>
-                                          <option value="comfortable">Comfortable (75%)</option>
-                                          <option value="familiar">Familiar (55%)</option>
-                                          <option value="learning">Learning (35%)</option>
-                                        </select>
-                                      </div>
-                                      <div>
-                                        <label className="text-xs text-on-surface-variant mb-1 block">Category</label>
-                                        <select className="w-full bg-surface border border-outline-variant rounded p-2 text-sm" value={newSkillCategory}
-                                          onChange={(e) => setNewSkillCategory(e.target.value)}>
-                                          <option value="">Select Category</option>
-                                          {categories.filter(c => c.type === "skill").map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
-                                        </select>
-                                      </div>
-                                      <div className="flex gap-2">
-                                        <button className="px-3 py-1.5 bg-primary text-on-primary rounded text-xs font-bold" onClick={async () => {
-                                          const pctMap: Record<string, number> = { expertise: 95, comfortable: 75, familiar: 55, learning: 35 };
-                                          const created = await api<Skill>("/skills", { method: "POST", body: JSON.stringify({ name: stackSearch, icon: newSkillIcon || "code", percent: pctMap[newSkillLevel] ?? 70, level: newSkillLevel, category: newSkillCategory, sortOrder: skills.length }) });
-                                          if (created) {
-                                            setSkills(await api<Skill[]>("/skills"));
-                                            const arr: string[] = (() => { try { return JSON.parse(p.stack); } catch { return []; } })();
-                                            const n = [...projects]; n[projects.indexOf(p)] = { ...p, stack: JSON.stringify([...arr, stackSearch]) }; setProjects(n);
-                                            setStackSearch(""); setNewSkillMode(""); setStackPickerOpen(null);
-                                          }
-                                        }}>Save & Select</button>
-                                        <button className="px-3 py-1.5 bg-surface-variant text-on-surface rounded text-xs" onClick={() => setNewSkillMode("")}>Cancel</button>
-                                      </div>
-                                    </div>
-                                  )}
+                        ); })()}
+                        <input
+                          className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
+                          placeholder="Type to search or add a skill..."
+                          value={stackSearch}
+                          onFocus={() => { setStackPickerOpen(p.id); setNewSkillMode(""); }}
+                          onChange={(e) => { setStackSearch(e.target.value); setNewSkillMode(""); setStackPickerOpen(p.id); }}
+                        />
+                        {stackPickerOpen === p.id && (
+                          <div className="absolute z-50 mt-1 w-full bg-surface-container-lowest border border-outline-variant rounded shadow-lg max-h-52 overflow-y-auto">
+                            {skills.filter(s => s.name.toLowerCase().includes(stackSearch.toLowerCase())).slice(0, 20).map(sk => {
+                              const selected: string[] = (() => { try { return JSON.parse(p.stack); } catch { return []; } })();
+                              const isSelected = selected.includes(sk.name);
+                              return (
+                                <div key={sk.id}
+                                  className={`px-3 py-2 text-sm cursor-pointer flex items-center gap-2 ${isSelected ? "bg-primary/10 text-primary" : "hover:bg-surface-variant text-on-surface"}`}
+                                  onClick={() => {
+                                    const next = isSelected ? selected.filter(x => x !== sk.name) : [...selected, sk.name];
+                                    const n = [...projects]; n[projects.indexOf(p)] = { ...p, stack: JSON.stringify(next) }; setProjects(n);
+                                    setStackSearch("");
+                                  }}
+                                >
+                                  <span className="material-symbols-outlined text-base">{sk.icon}</span>
+                                  <span className="flex-1">{sk.name}</span>
+                                  {isSelected && <span className="material-symbols-outlined text-base text-primary">check</span>}
                                 </div>
-                              )}
-                            </div>
-                          )}
-                        </div>
+                              );
+                            })}
+                            {stackSearch && !skills.some(s => s.name.toLowerCase() === stackSearch.toLowerCase()) && (
+                              <div className="border-t border-outline-variant">
+                                {newSkillMode === "" && (
+                                  <div className="px-3 py-2 text-sm cursor-pointer text-secondary hover:bg-surface-variant flex items-center gap-2"
+                                    onClick={() => setNewSkillMode("confirm")}>
+                                    <span className="material-symbols-outlined text-base">add</span>
+                                    Save &ldquo;{stackSearch}&rdquo; to skill list?
+                                  </div>
+                                )}
+                                {newSkillMode === "confirm" && (
+                                  <div className="p-3 space-y-2 bg-surface">
+                                    <div className="text-sm text-on-surface">Save <strong className="text-primary">&ldquo;{stackSearch}&rdquo;</strong> to your skill list?</div>
+                                    <div className="flex gap-2">
+                                      <button className="px-3 py-1.5 bg-primary text-on-primary rounded text-xs font-bold" onClick={() => {
+                                        setNewSkillCategory(categories.filter(c => c.type === "skill")[0]?.name || "");
+                                        setNewSkillIcon("code");
+                                        setNewSkillLevel("comfortable");
+                                        setNewSkillMode("form");
+                                      }}>Yes, add it</button>
+                                      <button className="px-3 py-1.5 bg-surface-variant text-on-surface rounded text-xs" onClick={() => setNewSkillMode("")}>Cancel</button>
+                                    </div>
+                                  </div>
+                                )}
+                                {newSkillMode === "form" && (
+                                  <div className="p-3 space-y-2 bg-surface">
+                                    <div className="text-xs text-on-surface-variant font-bold">New Skill: {stackSearch}</div>
+                                    <div>
+                                      <label className="text-xs text-on-surface-variant mb-1 block">Icon (Material)</label>
+                                      <input className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
+                                        value={newSkillIcon} onChange={(e) => setNewSkillIcon(e.target.value)} placeholder="e.g. code, javascript, dns" />
+                                    </div>
+                                    <div>
+                                      <label className="text-xs text-on-surface-variant mb-1 block">Level</label>
+                                      <select className="w-full bg-surface border border-outline-variant rounded p-2 text-sm" value={newSkillLevel}
+                                        onChange={(e) => setNewSkillLevel(e.target.value)}>
+                                        <option value="expertise">Expertise (95%)</option>
+                                        <option value="comfortable">Comfortable (75%)</option>
+                                        <option value="familiar">Familiar (55%)</option>
+                                        <option value="learning">Learning (35%)</option>
+                                      </select>
+                                    </div>
+                                    <div>
+                                      <label className="text-xs text-on-surface-variant mb-1 block">Category</label>
+                                      <select className="w-full bg-surface border border-outline-variant rounded p-2 text-sm" value={newSkillCategory}
+                                        onChange={(e) => setNewSkillCategory(e.target.value)}>
+                                        <option value="">Select Category</option>
+                                        {categories.filter(c => c.type === "skill").map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                                      </select>
+                                    </div>
+                                    <div className="flex gap-2">
+                                      <button className="px-3 py-1.5 bg-primary text-on-primary rounded text-xs font-bold" onClick={async () => {
+                                        const pctMap: Record<string, number> = { expertise: 95, comfortable: 75, familiar: 55, learning: 35 };
+                                        const created = await api<Skill>("/skills", { method: "POST", body: JSON.stringify({ name: stackSearch, icon: newSkillIcon || "code", percent: pctMap[newSkillLevel] ?? 70, level: newSkillLevel, category: newSkillCategory, sortOrder: skills.length }) });
+                                        if (created) {
+                                          setSkills(await api<Skill[]>("/skills"));
+                                          const arr: string[] = (() => { try { return JSON.parse(p.stack); } catch { return []; } })();
+                                          const n = [...projects]; n[projects.indexOf(p)] = { ...p, stack: JSON.stringify([...arr, stackSearch]) }; setProjects(n);
+                                          setStackSearch(""); setNewSkillMode(""); setStackPickerOpen(null);
+                                        }
+                                      }}>Save & Select</button>
+                                      <button className="px-3 py-1.5 bg-surface-variant text-on-surface rounded text-xs" onClick={() => setNewSkillMode("")}>Cancel</button>
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
+                            {!stackSearch && skills.length === 0 && (
+                              <div className="px-3 py-2 text-sm text-on-surface-variant italic">No skills yet. Type a name to create one.</div>
+                            )}
+                          </div>
+                        )}
                       </div>
                       {inp("Tags (comma-sep)", p.tags, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, tags: v }; setProjects(n); })}
                     </div>
