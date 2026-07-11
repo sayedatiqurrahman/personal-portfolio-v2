@@ -14,7 +14,7 @@ export default function Achievements({ achievements }: { achievements: Achieveme
             {a.image && (
               <div className="shrink-0">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={a.image} alt={a.title} className="w-14 h-14 object-contain rounded" />
+                <img src={a.image} alt={a.title} width={56} height={56} loading="lazy" decoding="async" className="w-14 h-14 object-contain rounded" />
               </div>
             )}
             <div className="flex-1 min-w-0">

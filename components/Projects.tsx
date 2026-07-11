@@ -62,10 +62,10 @@ function ProjectCard({ project }: { project: Project }) {
             </div>
             <div className="flex gap-4 mt-auto">
               {project.liveUrl && project.liveUrl !== "#" && (
-                <a className="text-primary hover:underline font-bold" href={project.liveUrl} target="_blank" rel="noopener noreferrer">[ LIVE_DEMO ]</a>
+                <a className="text-primary hover:underline font-bold" href={project.liveUrl} target="_blank" rel="noopener noreferrer" aria-label={`${project.title} live demo`}>[ LIVE_DEMO ]</a>
               )}
               {project.sourceUrl && project.sourceUrl !== "#" && (
-                <a className="text-secondary hover:underline font-bold" href={project.sourceUrl} target="_blank" rel="noopener noreferrer">[ SOURCE_CODE ]</a>
+                <a className="text-secondary hover:underline font-bold" href={project.sourceUrl} target="_blank" rel="noopener noreferrer" aria-label={`${project.title} source code`}>[ SOURCE_CODE ]</a>
               )}
             </div>
           </div>
@@ -110,10 +110,10 @@ function ProjectCard({ project }: { project: Project }) {
             </div>
             <div className="flex gap-4 mt-auto pt-4 border-t border-primary/10">
               {project.liveUrl && project.liveUrl !== "#" && (
-                <a className="text-primary hover:underline" href={project.liveUrl} target="_blank" rel="noopener noreferrer">[ LIVE_DEMO ]</a>
+                <a className="text-primary hover:underline" href={project.liveUrl} target="_blank" rel="noopener noreferrer" aria-label={`${project.title} live demo`}>[ LIVE_DEMO ]</a>
               )}
               {project.sourceUrl && project.sourceUrl !== "#" && (
-                <a className="text-secondary hover:underline" href={project.sourceUrl} target="_blank" rel="noopener noreferrer">[ SOURCE_CODE ]</a>
+                <a className="text-secondary hover:underline" href={project.sourceUrl} target="_blank" rel="noopener noreferrer" aria-label={`${project.title} source code`}>[ SOURCE_CODE ]</a>
               )}
             </div>
           </div>

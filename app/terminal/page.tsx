@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import TerminalView from "@/components/TerminalView";
 import { getProfile, getRoles, getProjects, getSkills, getEducation, getCertificates, getReviews } from "@/lib/db";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "Terminal",

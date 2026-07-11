@@ -28,7 +28,7 @@ export default function Certificates({ certificates }: { certificates: Certifica
               {cert.image && (
                 <div className="mb-3">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={cert.image} alt={cert.name} className="w-full h-24 object-contain rounded" />
+                  <img src={cert.image} alt={cert.name} width={320} height={96} loading="lazy" decoding="async" className="w-full h-24 object-contain rounded" />
                 </div>
               )}
               {cert.url && (

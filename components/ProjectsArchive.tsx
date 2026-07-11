@@ -72,7 +72,9 @@ export default function ProjectsArchive({ projects }: { projects: Project[] }) {
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+            <label htmlFor="project-search" className="sr-only">Search projects</label>
             <input
+              id="project-search"
               type="search"
               value={search}
               onChange={(event) => setSearch(event.target.value)}
@@ -80,7 +82,9 @@ export default function ProjectsArchive({ projects }: { projects: Project[] }) {
               className="w-full rounded-full border border-outline-variant bg-surface-container px-4 py-2 text-sm text-on-surface outline-none focus:border-primary sm:w-64"
             />
 
+            <label htmlFor="project-category" className="sr-only">Filter by category</label>
             <select
+              id="project-category"
               value={category}
               onChange={(event) => setCategory(event.target.value)}
               className="rounded-full border border-outline-variant bg-surface-container px-4 py-2 text-sm text-on-surface outline-none focus:border-primary"
@@ -166,10 +170,10 @@ export default function ProjectsArchive({ projects }: { projects: Project[] }) {
                     </div>
                     <div className="flex gap-4 mt-auto pt-3 border-t border-primary/10">
                       {project.liveUrl && project.liveUrl !== "#" && (
-                        <a className="text-primary hover:underline font-code-sm text-xs font-bold" href={project.liveUrl} target="_blank" rel="noopener">[ LIVE_DEMO ]</a>
+                        <a className="text-primary hover:underline font-code-sm text-xs font-bold" href={project.liveUrl} target="_blank" rel="noopener" aria-label={`${project.title} live demo`}>[ LIVE_DEMO ]</a>
                       )}
                       {project.sourceUrl && project.sourceUrl !== "#" && (
-                        <a className="text-secondary hover:underline font-code-sm text-xs font-bold" href={project.sourceUrl} target="_blank" rel="noopener">[ SOURCE_CODE ]</a>
+                        <a className="text-secondary hover:underline font-code-sm text-xs font-bold" href={project.sourceUrl} target="_blank" rel="noopener" aria-label={`${project.title} source code`}>[ SOURCE_CODE ]</a>
                       )}
                     </div>
                   </div>

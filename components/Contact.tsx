@@ -60,7 +60,7 @@ export default function Contact({ email: profileEmail }: { email?: string }) {
         </div>
 
         {/* Contact Form */}
-        <form onSubmit={handleSubmit} className="space-y-6 bg-surface-container p-8 rounded-xl border border-outline-variant/20 flex flex-col">
+        <form onSubmit={handleSubmit} className="space-y-6 bg-surface-container p-8 rounded-xl border border-outline-variant/20 flex flex-col" aria-label="Contact form">
           <div className="space-y-2">
             <label className="font-label-caps text-on-surface-variant" htmlFor="name">Identifier</label>
             <input

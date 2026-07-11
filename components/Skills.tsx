@@ -161,7 +161,7 @@ export default function Skills({ skills }: { skills: Skill[] }) {
                             </span>
                           </div>
                         </div>
-                        <div className="w-full bg-surface-variant h-1.5 rounded-full overflow-hidden">
+                        <div className="w-full bg-outline-variant/30 h-1.5 rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full transition-all ${LEVEL_BAR[skill.level] || "bg-primary"}`}
                             style={{ width: `${LEVEL_PERCENT[skill.level] || 70}%` }}

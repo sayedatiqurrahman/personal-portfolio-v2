@@ -1,5 +1,3 @@
-"use client";
-
 import type { Profile } from "@/lib/types";
 
 export default function About({ profile }: { profile: Profile }) {

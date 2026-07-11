@@ -18,10 +18,10 @@ export default function Footer({ profile }: { profile: Profile }) {
             <a className="text-on-surface-variant hover:text-primary transition-colors font-label-caps" href={profile.twitter} target="_blank" rel="noopener noreferrer">Twitter</a>
           )}
           {profile.resumeUrl && (
-            <a className="text-on-surface-variant hover:text-primary transition-colors font-label-caps" href={profile.resumeUrl} target="_blank" rel="noopener noreferrer">Resume</a>
+            <a className="text-on-surface-variant hover:text-primary transition-colors font-label-caps" href={profile.resumeUrl} target="_blank" rel="noopener noreferrer" aria-label="Resume (external link)">Resume</a>
           )}
           {profile.resumeFile && (
-            <a className="text-on-surface-variant hover:text-primary transition-colors font-label-caps" href="/api/resume" download>Resume</a>
+            <a className="text-on-surface-variant hover:text-primary transition-colors font-label-caps" href="/api/resume" download aria-label="Download resume file">Resume</a>
           )}
         </div>
       </div>

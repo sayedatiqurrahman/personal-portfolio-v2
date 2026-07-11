@@ -138,14 +138,14 @@ export default function Hero({ profile, roles, terminalInfo }: { profile: Profil
                 <span>{profile.name}:</span>{" "}
                 <GlitchTypewriter roles={roles} />
               </h1>
-              <div className="grid grid-cols-[120px_1fr] gap-y-2" role="list">
+              <dl className="grid grid-cols-[120px_1fr] gap-y-2">
                 {terminalInfo.map((info) => (
                   <Fragment key={info.id}>
-                    <span className="text-on-surface-variant" role="term">{info.label}:</span>
-                    <span role="definition">{info.value}</span>
+                    <dt className="text-on-surface-variant">{info.label}:</dt>
+                    <dd>{info.value}</dd>
                   </Fragment>
                 ))}
-              </div>
+              </dl>
               <div className="mt-8 flex gap-3 pt-6 flex-wrap justify-center md:justify-start">
                 {profile.github && (
                   <a href={profile.github} target="_blank" rel="noopener noreferrer" className="text-primary font-code-sm font-bold hover:text-primary-fixed transition-colors flex items-center gap-1.5">

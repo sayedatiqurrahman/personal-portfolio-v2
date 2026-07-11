@@ -13,7 +13,7 @@ import Footer from "@/components/Footer";
 import FAB from "@/components/FAB";
 import { getProfile, getRoles, getProjects, getSkills, getEducation, getCertificates, getAchievements, getReviews, getTerminalInfo } from "@/lib/db";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 async function safe<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
   try {
