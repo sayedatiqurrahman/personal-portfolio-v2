@@ -307,9 +307,7 @@ export default function AdminPage() {
     } catch (e) { alert("Failed to delete category: " + e); }
   }
 
-  const categoryOptions = Array.from(new Set(projects.map((p) => p.category).filter(Boolean))).sort();
   const projectCategoryNames = categories.filter(c => c.type === "project").map(c => c.name);
-  const allProjectCategories = Array.from(new Set([...projectCategoryNames, ...categoryOptions])).sort();
 
   const filteredProjects = useMemo(() => {
     let result = projects;
@@ -497,7 +495,7 @@ export default function AdminPage() {
                 <select value={projectCategory} onChange={(e) => { setProjectCategory(e.target.value); setProjectPage(1); }}
                   className="bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none">
                   <option value="All">All Categories</option>
-                  {allProjectCategories.map(c => <option key={c} value={c}>{c}</option>)}
+                  {projectCategoryNames.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
 
@@ -525,7 +523,7 @@ export default function AdminPage() {
                         <label className="text-xs text-on-surface-variant mb-1 block">Category</label>
                         <select
                           className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
-                          value={allProjectCategories.includes(p.category) ? p.category : ""}
+                          value={projectCategoryNames.includes(p.category) ? p.category : ""}
                           onChange={(e) => {
                             const n = [...projects];
                             n[projects.indexOf(p)] = { ...p, category: e.target.value };
@@ -533,7 +531,7 @@ export default function AdminPage() {
                           }}
                         >
                           <option value="">Select Category</option>
-                          {allProjectCategories.map((cat) => (
+                          {projectCategoryNames.map((cat) => (
                             <option key={cat} value={cat}>{cat}</option>
                           ))}
                         </select>
