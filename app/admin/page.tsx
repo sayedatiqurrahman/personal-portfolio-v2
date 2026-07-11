@@ -92,7 +92,6 @@ export default function AdminPage() {
   const [projectModalGridSpan, setProjectModalGridSpan] = useState("6");
   const [projectModalFeatured, setProjectModalFeatured] = useState(0);
   const [projectModalStatus, setProjectModalStatus] = useState("ongoing");
-  const [projectModalTermType, setProjectModalTermType] = useState("");
   const [projectModalTermScript, setProjectModalTermScript] = useState("");
   const [projectModalStack, setProjectModalStack] = useState("[]");
 
@@ -190,7 +189,6 @@ export default function AdminPage() {
     setProjectModalGridSpan("6");
     setProjectModalFeatured(0);
     setProjectModalStatus("ongoing");
-    setProjectModalTermType("");
     setProjectModalTermScript("");
     setProjectModalStack("[]");
     setStackSearch("");
@@ -204,7 +202,7 @@ export default function AdminPage() {
         title: projectModalTitle, category: projectModalCategory, description: projectModalDesc,
         longDescription: projectModalLongDesc, tags: projectModalTags, image: projectModalImage,
         liveUrl: projectModalLiveUrl, sourceUrl: projectModalSourceUrl, gridSpan: projectModalGridSpan,
-        featured: projectModalFeatured, status: projectModalStatus, terminalType: projectModalTermType,
+        featured: projectModalFeatured, status: projectModalStatus,
         terminalScript: projectModalTermScript, stack: projectModalStack, sortOrder: projects.length
       }) });
       setProjects(await api<Project[]>("/projects"));
@@ -745,7 +743,7 @@ export default function AdminPage() {
                       </div>
                       <div className="grid grid-cols-2 gap-3">
                         {inp("Grid Span (4/6/8/12)", p.gridSpan, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, gridSpan: v }; setProjects(n); })}
-                        {numInp("Featured (0=no, >0=pos)", p.featured, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, featured: Math.max(0, v) }; setProjects(n); })}
+                        {numInp("Featured (0=no, &gt;0=pos)", p.featured, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, featured: Math.max(0, v) }; setProjects(n); })}
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -1115,7 +1113,6 @@ export default function AdminPage() {
                 </div>
                 {inp("Description", projectModalDesc, setProjectModalDesc, { placeholder: "Short description" })}
                 {inp("Long Description", projectModalLongDesc, setProjectModalLongDesc, { multiline: true, placeholder: "Detailed description..." })}
-                {inp("Tags (comma-sep)", projectModalTags, setProjectModalTags, { placeholder: "e.g. react, nodejs, tailwind" })}
                 <div className="grid grid-cols-2 gap-3">
                   <div ref={stackRef} className="relative">
                     <label className="text-xs text-on-surface-variant mb-1 block">Stack (Skills)</label>
@@ -1230,10 +1227,19 @@ export default function AdminPage() {
                   </div>
                   {inp("Tags (comma-sep)", projectModalTags, setProjectModalTags, { placeholder: "e.g. react, nodejs, tailwind" })}
                 </div>
-                {inp("Image URL", projectModalImage, setProjectModalImage, { placeholder: "https://..." })}
                 <div className="grid grid-cols-2 gap-3">
                   {inp("Live URL", projectModalLiveUrl, setProjectModalLiveUrl, { placeholder: "https://..." })}
                   {inp("Source URL", projectModalSourceUrl, setProjectModalSourceUrl, { placeholder: "https://..." })}
+                </div>
+                {inp("Image URL", projectModalImage, setProjectModalImage, { placeholder: "https://..." })}
+                <div>
+                  <label className="text-xs text-on-surface-variant mb-1 block">Status</label>
+                  <select className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none" value={projectModalStatus} onChange={(e) => setProjectModalStatus(e.target.value)}>
+                    <option value="ongoing">Ongoing</option>
+                    <option value="finished">Finished</option>
+                    <option value="staging">Staging</option>
+                    <option value="failed/cancelled">Failed / Cancelled</option>
+                  </select>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -1246,23 +1252,11 @@ export default function AdminPage() {
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs text-on-surface-variant mb-1 block">Featured (0=no)</label>
+                    <label className="text-xs text-on-surface-variant mb-1 block">Featured (0=no, &gt;0=pos)</label>
                     <input type="number" min="0" className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none" value={projectModalFeatured} onChange={(e) => setProjectModalFeatured(Math.max(0, parseInt(e.target.value) || 0))} />
                   </div>
                 </div>
-                <div>
-                  <label className="text-xs text-on-surface-variant mb-1 block">Status</label>
-                  <select className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none" value={projectModalStatus} onChange={(e) => setProjectModalStatus(e.target.value)}>
-                    <option value="ongoing">Ongoing</option>
-                    <option value="finished">Finished</option>
-                    <option value="staging">Staging</option>
-                    <option value="failed/cancelled">Failed / Cancelled</option>
-                  </select>
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  {inp("Terminal Type", projectModalTermType, setProjectModalTermType, { placeholder: "e.g. bash, node" })}
-                  {inp("Terminal Script", projectModalTermScript, setProjectModalTermScript, { placeholder: "echo hello" })}
-                </div>
+                {inp("Terminal Script", projectModalTermScript, setProjectModalTermScript, { placeholder: "echo hello" })}
               </div>
               <div className="flex justify-end gap-2 mt-6">
                 <button onClick={() => setProjectModal(false)} className="px-4 py-2 bg-surface-variant text-on-surface rounded text-sm font-bold">Cancel</button>
