@@ -94,8 +94,9 @@ export default function AdminPage() {
   const [projectModalStatus, setProjectModalStatus] = useState("ongoing");
   const [projectModalTermType, setProjectModalTermType] = useState("");
   const [projectModalTermScript, setProjectModalTermScript] = useState("");
+  const [projectModalStack, setProjectModalStack] = useState("[]");
 
-  const [stackPickerOpen, setStackPickerOpen] = useState<number | null>(null);
+  const [stackPickerOpen, setStackPickerOpen] = useState<number | "modal" | null>(null);
   const [stackSearch, setStackSearch] = useState("");
   const [newSkillMode, setNewSkillMode] = useState<"" | "confirm" | "form">("");
   const [newSkillLevel, setNewSkillLevel] = useState("comfortable");
@@ -191,6 +192,10 @@ export default function AdminPage() {
     setProjectModalStatus("ongoing");
     setProjectModalTermType("");
     setProjectModalTermScript("");
+    setProjectModalStack("[]");
+    setStackSearch("");
+    setNewSkillMode("");
+    setStackPickerOpen(null);
     setProjectModal(true);
   }
   async function submitProjectModal() {
@@ -200,7 +205,7 @@ export default function AdminPage() {
         longDescription: projectModalLongDesc, tags: projectModalTags, image: projectModalImage,
         liveUrl: projectModalLiveUrl, sourceUrl: projectModalSourceUrl, gridSpan: projectModalGridSpan,
         featured: projectModalFeatured, status: projectModalStatus, terminalType: projectModalTermType,
-        terminalScript: projectModalTermScript, stack: "[]", sortOrder: projects.length
+        terminalScript: projectModalTermScript, stack: projectModalStack, sortOrder: projects.length
       }) });
       setProjects(await api<Project[]>("/projects"));
       setProjectModal(false);
@@ -1111,6 +1116,120 @@ export default function AdminPage() {
                 {inp("Description", projectModalDesc, setProjectModalDesc, { placeholder: "Short description" })}
                 {inp("Long Description", projectModalLongDesc, setProjectModalLongDesc, { multiline: true, placeholder: "Detailed description..." })}
                 {inp("Tags (comma-sep)", projectModalTags, setProjectModalTags, { placeholder: "e.g. react, nodejs, tailwind" })}
+                <div className="grid grid-cols-2 gap-3">
+                  <div ref={stackRef} className="relative">
+                    <label className="text-xs text-on-surface-variant mb-1 block">Stack (Skills)</label>
+                    {(() => { const arr: string[] = (() => { try { return JSON.parse(projectModalStack); } catch { return []; } })(); return arr.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mb-1">
+                        {arr.map((name: string) => (
+                          <span key={name} className="inline-flex items-center gap-1 bg-primary/20 text-primary rounded px-2 py-0.5 text-xs">
+                            {name}
+                            <button onClick={() => { const next = arr.filter(x => x !== name); setProjectModalStack(JSON.stringify(next)); }} className="text-error hover:text-error/80 font-bold">×</button>
+                          </span>
+                        ))}
+                      </div>
+                    ); })()}
+                    <input
+                      className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
+                      placeholder="Type to search or add a skill..."
+                      value={stackSearch}
+                      onFocus={() => { setStackPickerOpen("modal"); setNewSkillMode(""); }}
+                      onChange={(e) => { setStackSearch(e.target.value); setNewSkillMode(""); setStackPickerOpen("modal"); }}
+                    />
+                    {stackPickerOpen === "modal" && (
+                      <div className="absolute z-50 mt-1 w-full bg-surface-container-lowest border border-outline-variant rounded shadow-lg max-h-52 overflow-y-auto">
+                        {skills.filter(s => s.name.toLowerCase().includes(stackSearch.toLowerCase())).slice(0, 20).map(sk => {
+                          const selected: string[] = (() => { try { return JSON.parse(projectModalStack); } catch { return []; } })();
+                          const isSelected = selected.includes(sk.name);
+                          return (
+                            <div key={sk.id}
+                              className={`px-3 py-2 text-sm cursor-pointer flex items-center gap-2 ${isSelected ? "bg-primary/10 text-primary" : "hover:bg-surface-variant text-on-surface"}`}
+                              onClick={() => {
+                                const next = isSelected ? selected.filter(x => x !== sk.name) : [...selected, sk.name];
+                                setProjectModalStack(JSON.stringify(next));
+                                setStackSearch("");
+                              }}
+                            >
+                              <span className="material-symbols-outlined text-base">{sk.icon}</span>
+                              <span className="flex-1">{sk.name}</span>
+                              {isSelected && <span className="material-symbols-outlined text-base text-primary">check</span>}
+                            </div>
+                          );
+                        })}
+                        {stackSearch && !skills.some(s => s.name.toLowerCase() === stackSearch.toLowerCase()) && (
+                          <div className="border-t border-outline-variant">
+                            {newSkillMode === "" && (
+                              <div className="px-3 py-2 text-sm cursor-pointer text-secondary hover:bg-surface-variant flex items-center gap-2"
+                                onClick={() => setNewSkillMode("confirm")}>
+                                <span className="material-symbols-outlined text-base">add</span>
+                                Save &ldquo;{stackSearch}&rdquo; to skill list?
+                              </div>
+                            )}
+                            {newSkillMode === "confirm" && (
+                              <div className="p-3 space-y-2 bg-surface">
+                                <div className="text-sm text-on-surface">Save <strong className="text-primary">&ldquo;{stackSearch}&rdquo;</strong> to your skill list?</div>
+                                <div className="flex gap-2">
+                                  <button className="px-3 py-1.5 bg-primary text-on-primary rounded text-xs font-bold" onClick={() => {
+                                    setNewSkillCategory(categories.filter(c => c.type === "skill")[0]?.name || "");
+                                    setNewSkillIcon("code");
+                                    setNewSkillLevel("comfortable");
+                                    setNewSkillMode("form");
+                                  }}>Yes, add it</button>
+                                  <button className="px-3 py-1.5 bg-surface-variant text-on-surface rounded text-xs" onClick={() => setNewSkillMode("")}>Cancel</button>
+                                </div>
+                              </div>
+                            )}
+                            {newSkillMode === "form" && (
+                              <div className="p-3 space-y-2 bg-surface">
+                                <div className="text-xs text-on-surface-variant font-bold">New Skill: {stackSearch}</div>
+                                <div>
+                                  <label className="text-xs text-on-surface-variant mb-1 block">Icon (Material)</label>
+                                  <input className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none"
+                                    value={newSkillIcon} onChange={(e) => setNewSkillIcon(e.target.value)} placeholder="e.g. code, javascript, dns" />
+                                </div>
+                                <div>
+                                  <label className="text-xs text-on-surface-variant mb-1 block">Level</label>
+                                  <select className="w-full bg-surface border border-outline-variant rounded p-2 text-sm" value={newSkillLevel}
+                                    onChange={(e) => setNewSkillLevel(e.target.value)}>
+                                    <option value="expertise">Expertise (95%)</option>
+                                    <option value="comfortable">Comfortable (75%)</option>
+                                    <option value="familiar">Familiar (55%)</option>
+                                    <option value="learning">Learning (35%)</option>
+                                  </select>
+                                </div>
+                                <div>
+                                  <label className="text-xs text-on-surface-variant mb-1 block">Category</label>
+                                  <select className="w-full bg-surface border border-outline-variant rounded p-2 text-sm" value={newSkillCategory}
+                                    onChange={(e) => setNewSkillCategory(e.target.value)}>
+                                    <option value="">Select Category</option>
+                                    {categories.filter(c => c.type === "skill").map(c => <option key={c.id} value={c.name}>{c.name}</option>)}
+                                  </select>
+                                </div>
+                                <div className="flex gap-2">
+                                  <button className="px-3 py-1.5 bg-primary text-on-primary rounded text-xs font-bold" onClick={async () => {
+                                    const pctMap: Record<string, number> = { expertise: 95, comfortable: 75, familiar: 55, learning: 35 };
+                                    const created = await api<Skill>("/skills", { method: "POST", body: JSON.stringify({ name: stackSearch, icon: newSkillIcon || "code", percent: pctMap[newSkillLevel] ?? 70, level: newSkillLevel, category: newSkillCategory, sortOrder: skills.length }) });
+                                    if (created) {
+                                      setSkills(await api<Skill[]>("/skills"));
+                                      const arr: string[] = (() => { try { return JSON.parse(projectModalStack); } catch { return []; } })();
+                                      setProjectModalStack(JSON.stringify([...arr, stackSearch]));
+                                      setStackSearch(""); setNewSkillMode(""); setStackPickerOpen(null);
+                                    }
+                                  }}>Save & Select</button>
+                                  <button className="px-3 py-1.5 bg-surface-variant text-on-surface rounded text-xs" onClick={() => setNewSkillMode("")}>Cancel</button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        {!stackSearch && skills.length === 0 && (
+                          <div className="px-3 py-2 text-sm text-on-surface-variant italic">No skills yet. Type a name to create one.</div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                  {inp("Tags (comma-sep)", projectModalTags, setProjectModalTags, { placeholder: "e.g. react, nodejs, tailwind" })}
+                </div>
                 {inp("Image URL", projectModalImage, setProjectModalImage, { placeholder: "https://..." })}
                 <div className="grid grid-cols-2 gap-3">
                   {inp("Live URL", projectModalLiveUrl, setProjectModalLiveUrl, { placeholder: "https://..." })}
