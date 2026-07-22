@@ -1,0 +1,21 @@
+# humans.txt
+# https://atiq.is-a.dev/humans.txt
+
+/* TEAM */
+Name: Sayed Atiqur Rahman
+Role: Full Stack Developer
+Site: https://atiq.is-a.dev
+GitHub: https://github.com/sayed-atiqur-rahman
+LinkedIn: https://linkedin.com/in/sayed-atiqur-rahman
+Twitter: https://x.com/sayedatiqurrahman
+
+/* SITE */
+Description: Personal portfolio of Sayed Atiqur Rahman — full stack developer specializing in MERN Stack, TypeScript, React, Next.js, and Node.js.
+Built with: Next.js 14, TypeScript, Tailwind CSS, Prisma
+Deployed on: Vercel
+Last updated: 2026
+
+/* THANKS */
+Thanks to the open-source community.
+
+/* S Sayed Atiqur Rahman was here. */

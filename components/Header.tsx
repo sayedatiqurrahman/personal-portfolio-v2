@@ -42,7 +42,7 @@ export default function Header({ profile }: { profile: Profile }) {
     { label: "Skills", href: pathname === "/projects" ? "/#skills" : "#skills" },
     { label: "Education", href: pathname === "/projects" ? "/#education" : "#education" },
     { label: "Reviews", href: pathname === "/projects" ? "/#reviews" : "#reviews" },
-    { label: "About", href: pathname === "/projects" ? "/#about" : "#about" },
+    { label: "About", href: "/about" },
   ];
 
   return (
