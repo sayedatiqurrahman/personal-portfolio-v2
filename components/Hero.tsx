@@ -117,7 +117,7 @@ export default function Hero({ profile, roles, terminalInfo }: { profile: Profil
             <div className="w-full md:w-1/3 mb-8 md:mb-0">
               {profile.profileImage ? (
                 <Image
-                  alt={`Portrait of ${profile.name} - Full Stack Developer`}
+                  alt={`Portrait of ${profile.name} - Full Stack Developer | Sayed Atiqur Rahman`}
                   className="w-full aspect-[0.8] object-cover border-2 border-primary/20 rounded grayscale contrast-125"
                   style={{ boxShadow: '0 0 20px rgba(74,225,118,0.2)' }}
                   src={profile.profileImage}

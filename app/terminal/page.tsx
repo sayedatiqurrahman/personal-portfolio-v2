@@ -6,7 +6,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Terminal",
-  description: "Interactive terminal for Sayed Atiqur Rahman's portfolio. Browse projects, skills, and more via command line.",
+  description: "Interactive terminal for Sayed Atiqur Rahman (Atiq) portfolio. Browse projects, skills, and more via command line.",
 };
 
 export default async function TerminalPage() {

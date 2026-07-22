@@ -15,10 +15,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: "Projects",
-    description: `Browse all ${projects.length} projects by ${profile.name || "the developer"}. Full-stack applications built with modern technologies.`,
+    description: `Browse all ${projects.length} projects by Sayed Atiqur Rahman (Atiq) — Full Stack Developer. Full-stack applications built with modern technologies.`,
     openGraph: {
-      title: "Projects | Full Stack Portfolio",
-      description: `Browse all ${projects.length} projects. Full-stack applications built with modern technologies.`,
+      title: "Projects | Sayed Atiqur Rahman - Full Stack Portfolio",
+      description: `Browse all ${projects.length} projects by Sayed Atiqur Rahman. Full-stack applications built with modern technologies.`,
     },
   };
 }
@@ -32,12 +32,13 @@ export default async function ProjectsPage() {
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: `Projects by ${profile.name || "Developer"}`,
-    description: `A collection of ${projects.length} software development projects.`,
+    name: `Projects by Sayed Atiqur Rahman`,
+    description: `A collection of ${projects.length} software development projects by Sayed Atiqur Rahman (Atiq) — Full Stack Developer.`,
     url: "/projects",
     author: {
       "@type": "Person",
-      name: profile.name,
+      name: "Sayed Atiqur Rahman",
+      alternateName: ["Atiq", "Atiqur", "Atiqur Rahman"],
     },
   };
 

@@ -25,15 +25,15 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     openGraph: {
       title: `${profile.name || "Portfolio"} | Full Stack Developer`,
-      description,
+      description: `Sayed Atiqur Rahman (Atiq) — Full Stack Developer. ${description}`,
       url: "/",
-      images: [{ url: "https://images.pexels.com/photos/38513711/pexels-photo-38513711.jpeg", width: 1200, height: 630, alt: profile.name || "Developer" }],
+      images: [{ url: "https://images.pexels.com/photos/38513711/pexels-photo-38513711.jpeg", width: 1200, height: 630, alt: "Sayed Atiqur Rahman - Full Stack Developer Portfolio" }],
     },
     twitter: {
       card: "summary_large_image",
       title: `${profile.name || "Portfolio"} | Full Stack Developer`,
-      description,
-      images: [{ url: "https://images.pexels.com/photos/38513711/pexels-photo-38513711.jpeg", width: 1200, height: 630, alt: profile.name || "Developer" }],
+      description: `Sayed Atiqur Rahman (Atiq) — Full Stack Developer. ${description}`,
+      images: [{ url: "https://images.pexels.com/photos/38513711/pexels-photo-38513711.jpeg", width: 1200, height: 630, alt: "Sayed Atiqur Rahman - Full Stack Developer Portfolio" }],
     },
   };
 }
@@ -55,7 +55,13 @@ export default async function Home() {
     "@context": "https://schema.org",
     "@type": "Person",
     name: profile.name,
-    alternateName: profile.shortName,
+    alternateName: [
+      profile.shortName,
+      "Atiq",
+      "Atiqur",
+      "Atiqur Rahman",
+      "Sayed Atiqur Rahman",
+    ].filter(Boolean),
     description: profile.tagline || profile.bio,
     image: "https://images.pexels.com/photos/38512418/pexels-photo-38512418.jpeg?w=800",
     url: "https://atiq.is-a.dev",
@@ -67,6 +73,13 @@ export default async function Home() {
     email: profile.email,
     jobTitle: "Full Stack Developer",
     knowsAbout: ["MERN Stack", "TypeScript", "React", "Next.js", "Node.js", "Web Development"],
+    worksFor: {
+      "@type": "Person",
+      name: "Sayed Atiqur Rahman",
+    },
+    additionalName: "Atiq",
+    familyName: "Rahman",
+    givenName: "Sayed Atiqur",
   };
 
   return (
