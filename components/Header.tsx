@@ -36,13 +36,14 @@ export default function Header({ profile }: { profile: Profile }) {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const isHome = pathname === "/";
   const navItems = [
-    { label: "Home", href: pathname === "/projects" ? "/#home" : "#home" },
-    { label: "Projects", href: pathname === "/projects" ? "/projects" : "#projects" },
-    { label: "Skills", href: pathname === "/projects" ? "/#skills" : "#skills" },
-    { label: "Education", href: pathname === "/projects" ? "/#education" : "#education" },
-    { label: "Reviews", href: pathname === "/projects" ? "/#reviews" : "#reviews" },
-    { label: "About", href: "/about" },
+    { label: "Home", href: isHome ? "#home" : "/#home" },
+    { label: "Projects", href: isHome ? "#projects" : "/projects" },
+    { label: "Skills", href: isHome ? "#skills" : "/#skills" },
+    { label: "Education", href: isHome ? "#education" : "/#education" },
+    { label: "Reviews", href: isHome ? "#reviews" : "/#reviews" },
+    { label: "Blog", href: "/blog" },
   ];
 
   return (
@@ -52,7 +53,7 @@ export default function Header({ profile }: { profile: Profile }) {
       }`}
       style={{ boxShadow: `0 0 15px rgb(var(--accent) / 0.1)` }}
     >
-      <a href="#home" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-on-primary focus:rounded">
+      <a href={isHome ? "#home" : "/#home"} className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-on-primary focus:rounded">
         Skip to content
       </a>
       <div className="flex justify-between items-center w-full px-6 max-w-container-max mx-auto">

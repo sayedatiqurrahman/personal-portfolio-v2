@@ -1,8 +1,24 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { Marked } from "marked";
+import { markedHighlight } from "marked-highlight";
+import hljs from "highlight.js";
 
-type Tab = "profile" | "roles" | "projects" | "skills" | "categories" | "terminal" | "education" | "certificates" | "achievements" | "reviews" | "resume";
+const marked = new Marked(
+  markedHighlight({
+    langPrefix: "hljs language-",
+    highlight(code: string, lang: string) {
+      if (lang && hljs.getLanguage(lang)) {
+        try { return hljs.highlight(code, { language: lang }).value; } catch {}
+      }
+      try { return hljs.highlightAuto(code).value; } catch {}
+      return code;
+    },
+  })
+);
+
+type Tab = "profile" | "roles" | "projects" | "skills" | "categories" | "terminal" | "education" | "certificates" | "achievements" | "reviews" | "resume" | "blog";
 
 interface Profile {
   id: number; name: string; shortName: string; headerName: string; terminalPrompt: string;
@@ -24,6 +40,7 @@ interface Achievement { id: number; title: string; issuer: string; date: string;
 interface Review { id: number; clientName: string; company: string; rating: number; text: string; date: string; sortOrder: number; }
 interface TermInfo { id: number; key: string; label: string; value: string; sortOrder: number; }
 interface Category { id: number; name: string; type: string; sortOrder: number; }
+interface BlogPost { id: number; title: string; slug: string; content: string; excerpt: string; tags: string; coverImage: string; published: boolean; author: string; sortOrder: number; createdAt: string; }
 
 const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: "profile", label: "Profile", icon: "person" },
@@ -37,6 +54,7 @@ const TABS: { key: Tab; label: string; icon: string }[] = [
   { key: "achievements", label: "Achievements", icon: "emoji_events" },
   { key: "reviews", label: "Reviews", icon: "rate_review" },
   { key: "resume", label: "Resume", icon: "description" },
+  { key: "blog", label: "Blog", icon: "article" },
 ];
 
 async function api<T>(path: string, opts?: RequestInit): Promise<T> {
@@ -66,9 +84,11 @@ export default function AdminPage() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [termInfo, setTermInfo] = useState<TermInfo[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [blogPosts, setBlogPosts] = useState<BlogPost[]>([]);
 
   const [projectSearch, setProjectSearch] = useState("");
   const [projectCategory, setProjectCategory] = useState("All");
+  const [projectFeatured, setProjectFeatured] = useState<"all" | "featured" | "not-featured">("all");
   const [projectPage, setProjectPage] = useState(1);
   const projectPerPage = 10;
 
@@ -91,6 +111,7 @@ export default function AdminPage() {
   const [projectModalSourceUrl, setProjectModalSourceUrl] = useState("");
   const [projectModalGridSpan, setProjectModalGridSpan] = useState("6");
   const [projectModalFeatured, setProjectModalFeatured] = useState(0);
+  const [projectModalSortOrder, setProjectModalSortOrder] = useState(0);
   const [projectModalStatus, setProjectModalStatus] = useState("ongoing");
   const [projectModalTermScript, setProjectModalTermScript] = useState("");
   const [projectModalStack, setProjectModalStack] = useState("[]");
@@ -103,6 +124,34 @@ export default function AdminPage() {
   const [newSkillIcon, setNewSkillIcon] = useState("code");
   const stackRef = useRef<HTMLDivElement>(null);
 
+  const [blogModal, setBlogModal] = useState(false);
+  const [blogEditId, setBlogEditId] = useState<number | null>(null);
+  const [blogTitle, setBlogTitle] = useState("");
+  const [blogContent, setBlogContent] = useState("");
+  const [blogExcerpt, setBlogExcerpt] = useState("");
+  const [blogTags, setBlogTags] = useState("");
+  const [blogCoverImage, setBlogCoverImage] = useState("");
+  const [blogPublished, setBlogPublished] = useState(false);
+  const [blogPreview, setBlogPreview] = useState(false);
+  const [blogSearch, setBlogSearch] = useState("");
+  const [blogFilter, setBlogFilter] = useState<"all" | "published" | "draft">("all");
+  const blogTextareaRef = useRef<HTMLTextAreaElement>(null);
+
+  function wrapSelection(before: string, after: string) {
+    const ta = blogTextareaRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart;
+    const end = ta.selectionEnd;
+    const selected = blogContent.substring(start, end);
+    const newText = blogContent.substring(0, start) + before + selected + after + blogContent.substring(end);
+    setBlogContent(newText);
+    setTimeout(() => {
+      ta.focus();
+      ta.selectionStart = start + before.length;
+      ta.selectionEnd = start + before.length + selected.length;
+    }, 0);
+  }
+
   useEffect(() => {
     function handleEscape(e: KeyboardEvent) {
       if (e.key === "Escape") { setSkillModal(false); setProjectModal(false); }
@@ -114,7 +163,7 @@ export default function AdminPage() {
   const loadAll = useCallback(async () => {
     setLoading(true);
     const settle = <T,>(p: Promise<T>, fallback: T) => p.catch(() => fallback);
-    const [p, r, pr, s, e, c, a, rev, t, cat] = await Promise.all([
+    const [p, r, pr, s, e, c, a, rev, t, cat, blog] = await Promise.all([
       settle(api<Profile>("/profile"), null),
       settle(api<Role[]>("/roles"), []),
       settle(api<Project[]>("/projects"), []),
@@ -125,9 +174,10 @@ export default function AdminPage() {
       settle(api<Review[]>("/reviews"), []),
       settle(api<TermInfo[]>("/terminal-info"), []),
       settle(api<Category[]>("/categories"), []),
+      settle(api<BlogPost[]>("/blog"), []),
     ]);
     setProfile(p); setRoles(r); setProjects(pr); setSkills(s);
-    setEducation(e); setCertificates(c); setAchievements(a); setReviews(rev); setTermInfo(t); setCategories(cat);
+    setEducation(e); setCertificates(c); setAchievements(a); setReviews(rev); setTermInfo(t); setCategories(cat); setBlogPosts(blog);
     setLoading(false);
   }, []);
 
@@ -188,6 +238,7 @@ export default function AdminPage() {
     setProjectModalSourceUrl("");
     setProjectModalGridSpan("6");
     setProjectModalFeatured(0);
+    setProjectModalSortOrder(projects.length > 0 ? Math.max(...projects.map(p => p.sortOrder)) + 1 : 0);
     setProjectModalStatus("ongoing");
     setProjectModalTermScript("");
     setProjectModalStack("[]");
@@ -203,7 +254,7 @@ export default function AdminPage() {
         longDescription: projectModalLongDesc, tags: projectModalTags, image: projectModalImage,
         liveUrl: projectModalLiveUrl, sourceUrl: projectModalSourceUrl, gridSpan: projectModalGridSpan,
         featured: projectModalFeatured, status: projectModalStatus,
-        terminalScript: projectModalTermScript, stack: projectModalStack, sortOrder: projects.length
+        terminalScript: projectModalTermScript, stack: projectModalStack, sortOrder: projectModalSortOrder
       }) });
       setProjects(await api<Project[]>("/projects"));
       setProjectModal(false);
@@ -221,6 +272,27 @@ export default function AdminPage() {
       await api("/projects", { method: "DELETE", body: JSON.stringify({ id }) });
       setProjects(await api<Project[]>("/projects"));
     } catch (e) { alert("Failed to delete project: " + e); }
+  }
+  async function moveProject(visibleIdx: number, direction: -1 | 1) {
+    const current = filteredProjects[visibleIdx];
+    const targetIdx = visibleIdx + direction;
+    if (targetIdx < 0 || targetIdx >= filteredProjects.length) return;
+    const target = filteredProjects[targetIdx];
+    const currentSort = current.sortOrder;
+    const targetSort = target.sortOrder;
+    const n = projects.map(p => {
+      if (p.id === current.id) return { ...p, sortOrder: targetSort };
+      if (p.id === target.id) return { ...p, sortOrder: currentSort };
+      return p;
+    });
+    setProjects(n);
+    try {
+      await api("/projects/reorder", { method: "PUT", body: JSON.stringify({ items: [
+        { id: current.id, sortOrder: targetSort },
+        { id: target.id, sortOrder: currentSort },
+      ] }) });
+      flash();
+    } catch (e) { alert("Failed to reorder: " + e); }
   }
 
   function openSkillModal() {
@@ -372,11 +444,63 @@ export default function AdminPage() {
     } catch (e) { alert("Failed to delete category: " + e); }
   }
 
+  // ─── Blog CRUD ─────────────────────────────────────────
+  function openBlogModal(post?: BlogPost) {
+    if (post) {
+      setBlogEditId(post.id);
+      setBlogTitle(post.title);
+      setBlogContent(post.content);
+      setBlogExcerpt(post.excerpt);
+      setBlogTags(post.tags);
+      setBlogCoverImage(post.coverImage);
+      setBlogPublished(post.published);
+    } else {
+      setBlogEditId(null);
+      setBlogTitle("");
+      setBlogContent("");
+      setBlogExcerpt("");
+      setBlogTags("[]");
+      setBlogCoverImage("");
+      setBlogPublished(false);
+    }
+    setBlogPreview(false);
+    setBlogModal(true);
+  }
+
+  async function submitBlogModal() {
+    try {
+      if (blogEditId) {
+        await api("/blog", { method: "PUT", body: JSON.stringify({ id: blogEditId, title: blogTitle, content: blogContent, excerpt: blogExcerpt, tags: blogTags, coverImage: blogCoverImage, published: blogPublished }) });
+      } else {
+        await api("/blog", { method: "POST", body: JSON.stringify({ title: blogTitle, content: blogContent, excerpt: blogExcerpt, tags: blogTags, coverImage: blogCoverImage, published: blogPublished, sortOrder: blogPosts.length }) });
+      }
+      setBlogPosts(await api<BlogPost[]>("/blog"));
+      setBlogModal(false);
+    } catch (e) { alert("Failed to save blog post: " + e); }
+  }
+
+  async function removeBlogPost(id: number) {
+    if (!confirm("Delete this blog post?")) return;
+    try {
+      await api("/blog", { method: "DELETE", body: JSON.stringify({ id }) });
+      setBlogPosts(await api<BlogPost[]>("/blog"));
+    } catch (e) { alert("Failed to delete blog post: " + e); }
+  }
+
+  async function toggleBlogPublish(post: BlogPost) {
+    try {
+      await api("/blog", { method: "PUT", body: JSON.stringify({ id: post.id, published: !post.published }) });
+      setBlogPosts(await api<BlogPost[]>("/blog"));
+    } catch (e) { alert("Failed to toggle publish: " + e); }
+  }
+
   const projectCategoryNames = categories.filter(c => c.type === "project").map(c => c.name);
 
   const filteredProjects = useMemo(() => {
     let result = projects;
     if (projectCategory !== "All") result = result.filter(p => p.category === projectCategory);
+    if (projectFeatured === "featured") result = result.filter(p => p.featured > 0);
+    if (projectFeatured === "not-featured") result = result.filter(p => p.featured === 0);
     const q = projectSearch.trim().toLowerCase();
     if (q) result = result.filter(p =>
       p.title.toLowerCase().includes(q) ||
@@ -386,7 +510,7 @@ export default function AdminPage() {
       p.tags.toLowerCase().includes(q)
     );
     return result;
-  }, [projects, projectSearch, projectCategory]);
+  }, [projects, projectSearch, projectCategory, projectFeatured]);
 
   const totalProjectPages = Math.max(1, Math.ceil(filteredProjects.length / projectPerPage));
   const visibleProjects = filteredProjects.slice((projectPage - 1) * projectPerPage, projectPage * projectPerPage);
@@ -562,6 +686,12 @@ export default function AdminPage() {
                   <option value="All">All Categories</option>
                   {projectCategoryNames.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
+                <select value={projectFeatured} onChange={(e) => { setProjectFeatured(e.target.value as "all" | "featured" | "not-featured"); setProjectPage(1); }}
+                  className="bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none">
+                  <option value="all">All Projects</option>
+                  <option value="featured">Featured Only</option>
+                  <option value="not-featured">Non-Featured</option>
+                </select>
               </div>
 
               <div className="text-sm text-on-surface-variant flex justify-between">
@@ -569,14 +699,23 @@ export default function AdminPage() {
                 {totalProjectPages > 1 && <span>Page {projectPage} of {totalProjectPages}</span>}
               </div>
 
-              {[...visibleProjects].reverse().map((p) => (
+              {visibleProjects.map((p, idx) => (
                 <details key={p.id} className="bg-surface border border-outline-variant rounded">
                   <summary className="p-4 cursor-pointer flex justify-between items-center hover:bg-surface-variant">
                     <span className="font-bold text-primary">
+                      <span className="text-on-surface-variant mr-2 text-xs font-code-sm">#{p.sortOrder}</span>
                       {p.featured > 0 && <span className="text-secondary mr-2">★{p.featured}</span>}
                       {p.title}
                     </span>
-                    <div className="flex gap-3">
+                    <div className="flex gap-2 items-center">
+                      <button onClick={(e) => { e.stopPropagation(); moveProject(idx, -1); }} disabled={(projectPage - 1) * projectPerPage + idx === 0}
+                        className="text-on-surface-variant hover:text-primary disabled:opacity-30" title="Move up">
+                        <span className="material-symbols-outlined text-base">arrow_upward</span>
+                      </button>
+                      <button onClick={(e) => { e.stopPropagation(); moveProject(idx, 1); }} disabled={(projectPage - 1) * projectPerPage + idx >= filteredProjects.length - 1}
+                        className="text-on-surface-variant hover:text-primary disabled:opacity-30" title="Move down">
+                        <span className="material-symbols-outlined text-base">arrow_downward</span>
+                      </button>
                       <button onClick={(e) => { e.stopPropagation(); saveProject(p); }} className="text-primary text-xs hover:underline">Save</button>
                       <button onClick={(e) => { e.stopPropagation(); removeProject(p.id); }} className="text-error text-xs hover:underline">Delete</button>
                     </div>
@@ -741,9 +880,10 @@ export default function AdminPage() {
                           <option value="failed/cancelled">Failed / Cancelled</option>
                         </select>
                       </div>
-                      <div className="grid grid-cols-2 gap-3">
+                      <div className="grid grid-cols-3 gap-3">
                         {inp("Grid Span (4/6/8/12)", p.gridSpan, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, gridSpan: v }; setProjects(n); })}
                         {numInp("Featured (0=no, &gt;0=pos)", p.featured, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, featured: Math.max(0, v) }; setProjects(n); })}
+                        {numInp("Sort Order", p.sortOrder, (v) => { const n = [...projects]; n[projects.indexOf(p)] = { ...p, sortOrder: v }; setProjects(n); })}
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
@@ -1062,6 +1202,77 @@ export default function AdminPage() {
               <button onClick={saveProfile} className="px-6 py-2 bg-primary text-on-primary rounded text-sm font-bold">Save Resume Settings</button>
             </div>
           )}
+
+          {/* ─── Blog ────────────────────────────────── */}
+          {tab === "blog" && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-center">
+                <h2 className="text-lg font-bold text-primary">Blog Posts</h2>
+                <button onClick={() => openBlogModal()} className="px-4 py-2 bg-primary text-on-primary rounded text-sm font-bold">+ New Post</button>
+              </div>
+              <p className="text-on-surface-variant text-sm">Write markdown articles. Author is always Sayed Atiqur Rahman. Published posts appear on /blog.</p>
+
+              <div className="flex flex-col sm:flex-row gap-3">
+                <div className="relative flex-1">
+                  <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+                  <input type="search" placeholder="Search by title, slug, or tags..." value={blogSearch} onChange={(e) => setBlogSearch(e.target.value)}
+                    className="w-full bg-surface border border-outline-variant rounded-lg pl-10 pr-4 py-2 text-sm focus:border-primary outline-none font-code-sm" />
+                </div>
+                <div className="flex gap-1 bg-surface border border-outline-variant rounded-lg p-1">
+                  {(["all", "published", "draft"] as const).map((f) => (
+                    <button key={f} onClick={() => setBlogFilter(f)}
+                      className={`px-3 py-1 rounded text-xs font-bold capitalize transition-colors ${blogFilter === f ? "bg-primary text-on-primary" : "text-on-surface-variant hover:text-primary"}`}>
+                      {f}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {blogPosts.length === 0 && (
+                <div className="text-on-surface-variant text-sm py-8 text-center">No blog posts yet. Create your first one!</div>
+              )}
+
+              {[...blogPosts].reverse()
+                .filter((post) => {
+                  if (blogFilter === "published" && !post.published) return false;
+                  if (blogFilter === "draft" && post.published) return false;
+                  if (!blogSearch) return true;
+                  const q = blogSearch.toLowerCase();
+                  const tags: string[] = (() => { try { return JSON.parse(post.tags); } catch { return []; } })();
+                  return post.title.toLowerCase().includes(q) || post.slug.toLowerCase().includes(q) || post.excerpt.toLowerCase().includes(q) || tags.some((t) => t.toLowerCase().includes(q));
+                })
+                .map((post) => (
+                <div key={post.id} className="bg-surface border border-outline-variant rounded p-4 flex justify-between items-start gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-bold text-primary truncate">{post.title}</span>
+                      {post.published ? (
+                        <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded">Published</span>
+                      ) : (
+                        <span className="text-xs bg-surface-variant text-on-surface-variant px-2 py-0.5 rounded">Draft</span>
+                      )}
+                    </div>
+                    <div className="text-xs text-on-surface-variant">
+                      /blog/{post.slug} &middot; by {post.author} &middot; {new Date(post.createdAt).toLocaleDateString()}
+                    </div>
+                    {post.excerpt && <div className="text-sm text-on-surface-variant mt-1 truncate">{post.excerpt}</div>}
+                    {(() => { const tags: string[] = (() => { try { return JSON.parse(post.tags); } catch { return []; } })(); return tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-2">
+                        {tags.map((t) => <span key={t} className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded font-code-sm">{t}</span>)}
+                      </div>
+                    ); })()}
+                  </div>
+                  <div className="flex gap-2 shrink-0 pt-1">
+                    <button onClick={() => toggleBlogPublish(post)} className="text-xs hover:underline" style={{ color: post.published ? "var(--color-error, #f87171)" : "var(--color-primary, #4be277)" }}>
+                      {post.published ? "Unpublish" : "Publish"}
+                    </button>
+                    <button onClick={() => openBlogModal(post)} className="text-primary text-xs hover:underline">Edit</button>
+                    <button onClick={() => removeBlogPost(post.id)} className="text-error text-xs hover:underline">Delete</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </main>
 
         {/* ─── Skill Modal ─────────────────────────────── */}
@@ -1241,7 +1452,7 @@ export default function AdminPage() {
                     <option value="failed/cancelled">Failed / Cancelled</option>
                   </select>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-3 gap-3">
                   <div>
                     <label className="text-xs text-on-surface-variant mb-1 block">Grid Span</label>
                     <select className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none" value={projectModalGridSpan} onChange={(e) => setProjectModalGridSpan(e.target.value)}>
@@ -1255,12 +1466,107 @@ export default function AdminPage() {
                     <label className="text-xs text-on-surface-variant mb-1 block">Featured (0=no, &gt;0=pos)</label>
                     <input type="number" min="0" className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none" value={projectModalFeatured} onChange={(e) => setProjectModalFeatured(Math.max(0, parseInt(e.target.value) || 0))} />
                   </div>
+                  <div>
+                    <label className="text-xs text-on-surface-variant mb-1 block">Sort Order</label>
+                    <input type="number" min="0" className="w-full bg-surface border border-outline-variant rounded p-2 text-sm focus:border-primary outline-none" value={projectModalSortOrder} onChange={(e) => setProjectModalSortOrder(Math.max(0, parseInt(e.target.value) || 0))} />
+                  </div>
                 </div>
                 {inp("Terminal Script", projectModalTermScript, setProjectModalTermScript, { placeholder: "echo hello" })}
               </div>
               <div className="flex justify-end gap-2 mt-6">
                 <button onClick={() => setProjectModal(false)} className="px-4 py-2 bg-surface-variant text-on-surface rounded text-sm font-bold">Cancel</button>
                 <button onClick={submitProjectModal} disabled={!projectModalTitle.trim()} className="px-4 py-2 bg-primary text-on-primary rounded text-sm font-bold disabled:opacity-50">Add Project</button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ─── Blog Modal ──────────────────────────────── */}
+        {blogModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50" onClick={() => setBlogModal(false)}>
+            <div className="bg-surface border border-outline-variant rounded-lg p-6 w-full max-w-6xl shadow-xl max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+              <h3 className="text-lg font-bold text-primary mb-4">{blogEditId ? "Edit Blog Post" : "New Blog Post"}</h3>
+              <div className="space-y-3">
+                {inp("Title", blogTitle, setBlogTitle, { placeholder: "Your blog post title" })}
+                {inp("Excerpt", blogExcerpt, setBlogExcerpt, { placeholder: "Short summary for previews..." })}
+                <div className="grid grid-cols-2 gap-3">
+                  {inp("Cover Image URL", blogCoverImage, setBlogCoverImage, { placeholder: "https://..." })}
+                  {inp("Tags", blogTags, setBlogTags, { placeholder: '["tag1", "tag2"]' })}
+                </div>
+                <div>
+                  <label className="text-xs text-on-surface-variant mb-1 block">Content (Markdown)</label>
+                  <div className="border border-outline-variant rounded-lg overflow-hidden">
+                    <div className="flex items-center justify-between bg-surface-container border-b border-outline-variant px-2 py-1">
+                      <div className="flex items-center gap-0.5">
+                        {[
+                          { icon: "title", action: () => wrapSelection("## ", ""), title: "Heading" },
+                          { icon: "format_bold", action: () => wrapSelection("**", "**"), title: "Bold" },
+                          { icon: "format_italic", action: () => wrapSelection("*", "*"), title: "Italic" },
+                          { icon: "code", action: () => wrapSelection("`", "`"), title: "Inline Code" },
+                          { icon: "format_list_bulleted", action: () => wrapSelection("- ", ""), title: "List" },
+                          { icon: "format_list_numbered", action: () => wrapSelection("1. ", ""), title: "Ordered List" },
+                          { icon: "format_quote", action: () => wrapSelection("> ", ""), title: "Quote" },
+                          { icon: "link", action: () => wrapSelection("[", "](url)"), title: "Link" },
+                          { icon: "image", action: () => wrapSelection("![alt](", ")"), title: "Image" },
+                          { icon: "data_object", action: () => wrapSelection("```js\n", "\n```"), title: "Code Block" },
+                        ].map((btn) => (
+                          <button key={btn.icon} type="button" onClick={btn.action} title={btn.title}
+                            className="p-1.5 rounded hover:bg-primary/20 text-on-surface-variant hover:text-primary transition-colors">
+                            <span className="material-symbols-outlined text-base">{btn.icon}</span>
+                          </button>
+                        ))}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <button type="button" onClick={() => setBlogPreview(false)}
+                          className={`px-2 py-1 rounded text-xs font-bold transition-colors ${!blogPreview ? "bg-primary text-on-primary" : "text-on-surface-variant hover:text-primary"}`}>
+                          Edit
+                        </button>
+                        <button type="button" onClick={() => setBlogPreview(true)}
+                          className={`px-2 py-1 rounded text-xs font-bold transition-colors ${blogPreview ? "bg-primary text-on-primary" : "text-on-surface-variant hover:text-primary"}`}>
+                          Preview
+                        </button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 min-h-[400px]" style={{ display: blogPreview ? "block" : undefined }}>
+                      {!blogPreview && (
+                        <textarea
+                          ref={blogTextareaRef}
+                          className="w-full bg-surface p-3 text-sm focus:outline-none min-h-[400px] font-code-sm resize-none border-r border-outline-variant"
+                          value={blogContent}
+                          onChange={(e) => setBlogContent(e.target.value)}
+                          placeholder={"# Your heading\n\nWrite your article in markdown...\n\n```js\nconst code = 'highlighted';\n```\n\n> Blockquote\n\n- List item"}
+                          onKeyDown={(e) => {
+                            if (e.key === "Tab") {
+                              e.preventDefault();
+                              const ta = e.currentTarget;
+                              const start = ta.selectionStart;
+                              const end = ta.selectionEnd;
+                              const val = ta.value;
+                              setBlogContent(val.substring(0, start) + "  " + val.substring(end));
+                              setTimeout(() => { ta.selectionStart = ta.selectionEnd = start + 2; }, 0);
+                            }
+                          }}
+                        />
+                      )}
+                      <div className="bg-surface p-3 text-sm text-on-surface-variant prose prose-invert prose-headings:text-primary prose-a:text-primary prose-code:text-primary prose-pre:bg-surface-container prose-pre:border prose-pre:border-outline-variant/20 max-w-none overflow-y-auto min-h-[400px]">
+                        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+                        <div dangerouslySetInnerHTML={{ __html: (() => { try { return marked.parse(blogContent) as string; } catch { return "<p class='text-on-surface-variant'>Start writing to see preview...</p>"; } })() }} />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <input type="checkbox" id="blog-published" checked={blogPublished} onChange={(e) => setBlogPublished(e.target.checked)}
+                      className="accent-primary" />
+                    <label htmlFor="blog-published" className="text-sm text-on-surface-variant">Published</label>
+                  </div>
+                  <div className="text-xs text-on-surface-variant">Author: <strong className="text-primary">Sayed Atiqur Rahman</strong></div>
+                </div>
+              </div>
+              <div className="flex justify-end gap-2 mt-6">
+                <button onClick={() => setBlogModal(false)} className="px-4 py-2 bg-surface-variant text-on-surface rounded text-sm font-bold">Cancel</button>
+                <button onClick={submitBlogModal} disabled={!blogTitle.trim()} className="px-4 py-2 bg-primary text-on-primary rounded text-sm font-bold disabled:opacity-50">{blogEditId ? "Save Changes" : "Create Post"}</button>
               </div>
             </div>
           </div>

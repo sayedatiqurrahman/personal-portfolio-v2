@@ -114,6 +114,19 @@ export async function deleteProject(id: number) {
   }
 }
 
+export async function reorderProjects(items: { id: number; sortOrder: number }[]) {
+  try {
+    await prisma.$transaction(
+      items.map(({ id, sortOrder }) =>
+        prisma.project.update({ where: { id }, data: { sortOrder } })
+      )
+    );
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 // ─── Skills ─────────────────────────────────────────────
 export async function getSkills() {
   try {
@@ -345,6 +358,68 @@ export async function updateAchievement(id: number, data: any) {
 export async function deleteAchievement(id: number) {
   try {
     return await prisma.achievement.delete({ where: { id } });
+  } catch {
+    return null;
+  }
+}
+
+// ─── Blog ───────────────────────────────────────────────
+function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+    + "-" + Date.now().toString(36);
+}
+
+export async function getBlogPosts(publishedOnly = false) {
+  try {
+    const where = publishedOnly ? { published: true } : {};
+    return await prisma.blog.findMany({ where, orderBy: { createdAt: "desc" } });
+  } catch {
+    return [];
+  }
+}
+
+export async function getBlogPost(slug: string) {
+  try {
+    return await prisma.blog.findUnique({ where: { slug } });
+  } catch {
+    return null;
+  }
+}
+
+export async function createBlogPost(data: { title: string; content?: string; excerpt?: string; tags?: string; coverImage?: string; published?: boolean; author?: string; sortOrder?: number }) {
+  try {
+    return await prisma.blog.create({
+      data: {
+        title: data.title,
+        slug: slugify(data.title),
+        content: data.content ?? "",
+        excerpt: data.excerpt ?? "",
+        tags: data.tags ?? "[]",
+        coverImage: data.coverImage ?? "",
+        published: data.published ?? false,
+        author: data.author ?? "Sayed Atiqur Rahman",
+        sortOrder: data.sortOrder ?? 0,
+      },
+    });
+  } catch {
+    return null;
+  }
+}
+
+export async function updateBlogPost(id: number, data: Record<string, unknown>) {
+  try {
+    return await prisma.blog.update({ where: { id }, data: data as any });
+  } catch {
+    return null;
+  }
+}
+
+export async function deleteBlogPost(id: number) {
+  try {
+    return await prisma.blog.delete({ where: { id } });
   } catch {
     return null;
   }

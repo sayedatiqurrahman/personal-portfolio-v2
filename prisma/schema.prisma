@@ -123,3 +123,18 @@ model TerminalInfo {
   value     String @default("")
   sortOrder Int    @default(0)
 }
+
+model Blog {
+  id          Int      @id @default(autoincrement())
+  title       String
+  slug        String   @unique
+  content     String   @default("")
+  excerpt     String   @default("")
+  tags        String   @default("[]")
+  coverImage  String   @default("")
+  published   Boolean  @default(false)
+  author      String   @default("Sayed Atiqur Rahman")
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
